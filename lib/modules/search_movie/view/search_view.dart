@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/modules/search_movie/controller/search_controller.dart';
 import 'package:mobi_phim/widgets/list_movie_horizontal_widget.dart';
@@ -28,7 +29,7 @@ class SearchView extends GetView<SearchMovieController> {
                 },
                 style: const TextStyle(color: Colors.white,fontSize: 20),
                 decoration: InputDecoration(
-                  hintText: "Tìm kiếm phim, tác phẩm...",
+                  hintText: AppString.SEARCH_HINT_TITLE,
                   hintStyle: const TextStyle(color: Colors.white54,fontSize: 20),
                   prefixIcon: const Icon(Icons.search,color: Colors.white54,size: 40,),
                   border: const OutlineInputBorder(

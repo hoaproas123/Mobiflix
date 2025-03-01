@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
 class AnimatedGradientText extends StatefulWidget {
   final String text;
   final List<Color> colors;
@@ -24,7 +25,7 @@ class _AnimatedGradientTextState extends State<AnimatedGradientText>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: AppNumber.NUMBER_OF_DURATION_ANIMATE_GRADIENT_SECONDS),
     )..repeat(reverse: true);
   }
 

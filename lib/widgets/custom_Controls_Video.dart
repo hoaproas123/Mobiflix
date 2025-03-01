@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:video_player/video_player.dart';
 
 class CustomControls extends StatefulWidget {
@@ -46,7 +48,7 @@ class _CustomControlsState extends State<CustomControls> {
 
   void _startHideTimer() {
     _hideTimer?.cancel(); // Hủy bộ đếm thời gian trước đó (nếu có)
-    _hideTimer = Timer(const Duration(seconds: 5), () {
+    _hideTimer = Timer(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_COUNTDOWN_HIDE_BUTTON_ON_PLAY_VIDEO_SECONDS), () {
       if (mounted) {
         setState(() {
           SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
@@ -150,7 +152,7 @@ class _CustomControlsState extends State<CustomControls> {
               ignoring: !_isVisible,
               child: AnimatedOpacity(
                 opacity: _isVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_OPACITY_BUTTON_ON_PLAY_VIDEO_MILLISECONDS),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -234,7 +236,7 @@ class _CustomControlsState extends State<CustomControls> {
                             borderRadius: BorderRadius.zero,
                             dropdownColor: Colors.black,
                             elevation: 0,
-                            hint: const Text("Các Tập",style: TextStyle(color: Colors.white)),
+                            hint: const Text(AppString.LIST_EPISODE_BUTTON,style: TextStyle(color: Colors.white)),
                             icon: const Padding(
                               padding: EdgeInsets.only(left: 8),
                               child: Icon(
@@ -270,7 +272,7 @@ class _CustomControlsState extends State<CustomControls> {
                                   color: Colors.white,
                                   size: 30,),
                                 SizedBox(width: 5,),
-                                Text("Tập Tiếp Theo",style: TextStyle(color: Colors.white),),
+                                Text(AppString.NEXT_EPISODE_BUTTON,style: TextStyle(color: Colors.white),),
                               ],
                             ),
                           ),

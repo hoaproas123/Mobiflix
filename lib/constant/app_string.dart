@@ -1,6 +1,9 @@
 abstract class AppString {
   static const String APP_NAME = "Mobiflix";
   static const String PLAY_BUTTON = "Phát";
+  static const String NEXT_EPISODE_BUTTON = "Tập Tiếp Theo";
+  static const String LIST_EPISODE_BUTTON = "Các Tập";
+  static const String SEARCH_HINT_TITLE = "Tìm kiếm phim, tác phẩm...";
 }
 
 abstract class DefaultString {
@@ -23,6 +26,7 @@ abstract class CommonString {
 abstract class MoviePaginationString {
   static const String CURRENT_PAGE = "currentPage";
   static const String TOTAL_PAGE = "totalPages";
+
 }
 
 abstract class MovieString {

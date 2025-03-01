@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/core/base_response.dart';
 import 'package:mobi_phim/models/movies_model.dart';
@@ -37,24 +38,24 @@ class SearchMovieController extends GetxController with GetTickerProviderStateMi
           url: DomainProvider.search + searchString + DomainProvider.limit60 + addQuery,));
     update();
     if (response?.statusCode == HttpStatus.ok) {
-      if(response?.status == 'success') {//success with 'data' and true with 'items' and 'movies'
+      if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
         if(response?.data !=null){
-          movieBySearch.value=MoviesModel.fromJson(response!.data!,"");
+          movieBySearch.value=MoviesModel.fromJson(response!.data!,DefaultString.NULL);
         }
         // _updateBackgroundColor(listNewUpdateMovie[0].poster_url??"");
         isLoading.value=false;
       }
       else {
         Alert.showError(
-            title: "ERROR",
-            message:"ERROR_MESSAGE",
-            buttonText:  "OK");
+            title: CommonString.ERROR,
+            message:CommonString.ERROR_DATA_MESSAGE,
+            buttonText:  CommonString.CANCEL);
       }
     } else {
       Alert.showError(
-          title: "ERROR",
-          message:"ERROR_MESSAGE",
-          buttonText:  "OK");
+          title: CommonString.ERROR,
+          message:CommonString.ERROR_URL_MESSAGE,
+          buttonText:  CommonString.CANCEL);
     }
     // Alert.closeLoadingIndicator();
   }
