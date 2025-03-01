@@ -3,7 +3,7 @@
 Một ứng dụng xem phim dành cho các tín đồ phim ảnh.
 
 # Video Demo
-https://photos.app.goo.gl/2ifTeFp7j6CUKyyZ8
+[https://photos.app.goo.gl/2ifTeFp7j6CUKyyZ8](https://photos.app.goo.gl/1kDpkhVZVbDn15ww5)
 
 ## Getting Started
 
