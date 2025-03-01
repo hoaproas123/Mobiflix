@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_colors.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/data/country_data.dart';
 import 'package:mobi_phim/data/option_view_data.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/option_movie/controller/option_movie_controller.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
+import 'package:mobi_phim/widgets/widgets.dart';
 
 
 class OptionMovieView extends GetView<OptionMovieController> {
@@ -19,7 +22,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Obx(() => AppBar(
-          backgroundColor: controller.backgroundColor.value == Colors.white ?  const Color(0xFF141E30) :controller.backgroundColor.value,
+          backgroundColor: controller.backgroundColor.value == Colors.white ?  AppColors.DEFAULT_APPBAR_COLOR :controller.backgroundColor.value,
           elevation: 0,
           leading: const BackButton(color: Colors.white,style: ButtonStyle(iconSize: WidgetStatePropertyAll(30)),),
           title: Text(
@@ -31,8 +34,8 @@ class OptionMovieView extends GetView<OptionMovieController> {
           actions: [
             IconButton(
               onPressed: (){
-                String addYearQuery=controller.selectYear.value=='Năm' ? '':'&year=${controller.selectYear.value}';
-                String addCountryQuery=controller.selectCountry.value.slug=='Quốc Gia' ? '' : '&country=${controller.selectCountry.value.slug}';
+                String addYearQuery=controller.selectYear.value==DefaultString.YEAR ? DefaultString.NULL:'&year=${controller.selectYear.value}';
+                String addCountryQuery=controller.selectCountry.value.slug==DefaultString.COUNTRY ? DefaultString.NULL : '&country=${controller.selectCountry.value.slug}';
                 String addQuery= addYearQuery + addCountryQuery;
                 Get.toNamed('/home/search',arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery]);
               },
@@ -42,7 +45,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(width: 10),
+            WidgetSize.sizedBoxWidth_10
           ],
         ),),
       ),
@@ -52,15 +55,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: controller.backgroundColor.value == Colors.white ?
-                [
-                  const Color(0xFF141E30), // Xanh đen đậm
-                  const Color(0xFF243B55), // Xanh than
-                  const Color(0xFF2B2E4A), // Tím than
-                  const Color(0xFF1B1B2F), // Đen xanh đậm
-                  const Color(0xFF121212), // Đen thuần
-                  const Color(0xFF0F0F0F), // Đen xám
-                  const Color(0xFF232526), // Xám khói
-                ]
+                AppColors.DEFAULT_BACKGROUND_COLORS
                     :
                 List.generate(6, (index) {
                   double lightness = controller.hsl.value.lightness * (1 - (index * 0.17)); // Giảm 15% mỗi bước
@@ -74,13 +69,13 @@ class OptionMovieView extends GetView<OptionMovieController> {
                 builder: (context) {
                   return ListView(
                       children: [
-                        const SizedBox(height: 15,),
+                        WidgetSize.sizedBoxHeight_15,
                         SizedBox(
                           height: 30,
                           child: Row(
                             children: [
                               Hero(
-                                tag: 'close',
+                                tag: TagString.CLOSE,
                                 child: TextButton(
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.all(0),
@@ -114,7 +109,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                                   ),
                                 ),
                               ),
-                              controller.tag=='Năm' ? const SizedBox() :
+                              controller.tag==DefaultString.YEAR ? const SizedBox() :
                               SizedBox(
                                 child: Obx(() {
                                   return Hero(
@@ -165,8 +160,8 @@ class OptionMovieView extends GetView<OptionMovieController> {
                                   );
                                 },)
                               ),
-                              const SizedBox(width: 5,),
-                              controller.tag =='Quốc Gia' ? const SizedBox() :
+                              WidgetSize.sizedBoxWidth_5,
+                              controller.tag ==DefaultString.COUNTRY ? const SizedBox() :
                               SizedBox(
                                 child: Obx(() {
                                   return Hero(
@@ -223,9 +218,9 @@ class OptionMovieView extends GetView<OptionMovieController> {
                         GetBuilder<OptionMovieController>(builder: (controller) {
                           return Column(
                             children: [
-                              controller.tag =='Năm' || controller.selectYear.value!='Năm' || controller.selectCountry.value.name!='Quốc Gia' ? const SizedBox() :
-                              controller.tag =='Quốc Gia' ? ListMovieWidget(title: "Phim ${controller.title} Mới Cập Nhật",controller: controller,url: false,isHome:false) :
-                              ListMovieWidget(title: "${controller.tag} Mới Cập Nhật",controller: controller,url: false,isHome: false,),
+                              controller.tag ==DefaultString.YEAR || controller.selectYear.value!=DefaultString.YEAR || controller.selectCountry.value.name!=DefaultString.COUNTRY ? const SizedBox() :
+                              controller.tag ==DefaultString.COUNTRY ? ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_COUNTRY(controller.title),controller: controller,url: false,isHome:false) :
+                              ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_OPTION(controller.tag),controller: controller,url: false,isHome: false,),
                               ListView.builder(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
@@ -233,7 +228,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                                 itemBuilder: (context, index) {
                                   MoviesModel moviesModel=controller.listMovieModel[index];
                                   int? len=moviesModel.pagination?.totalPages;
-                                  return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.title)??"",index: index,controller: controller,isHome: false,);
+                                  return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.title)??DefaultString.NULL,index: index,controller: controller,isHome: false,);
                                 },),
                             ],
                           );

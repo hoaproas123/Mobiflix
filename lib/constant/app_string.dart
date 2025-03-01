@@ -38,6 +38,9 @@ abstract class MovieString {
   static const String DURATION_TITLE = "Thời lượng";
   static const String LIST_EPISODE_TITLE = "Các Tập";
   static const String RELATED_CONTENT_TITLE = "Nội dung tương tự";
+  static String NEW_UPDATE_TITLE_COUNTRY (String countryName) => "Phim ${countryName} Mới Cập Nhật";
+  static String NEW_UPDATE_TITLE_OPTION (String optionName) => "${optionName} Mới Cập Nhật";
+
 }
 abstract class TagString {
   static const String CLOSE = "close";

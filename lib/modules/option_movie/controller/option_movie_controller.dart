@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/core/base_response.dart';
 import 'package:mobi_phim/data/country_data.dart';
@@ -27,8 +29,8 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   Rx<MoviesModel> movieByOption=MoviesModel().obs;
   List<ItemMovieModel> listNewUpdateMovie=[];
   ItemMovieModel? firstMovieItem;
-  var selectYear='Năm'.obs;
-  Rx<CountryItemModel> selectCountry=CountryItemModel(name: 'Quốc Gia',slug: 'Quốc Gia').obs;
+  var selectYear=DefaultString.YEAR.obs;
+  Rx<CountryItemModel> selectCountry=CountryItemModel(name: DefaultString.COUNTRY,slug: DefaultString.COUNTRY).obs;
   List<int> listYear=[];
 
   var backgroundColor = Colors.white.obs;
@@ -37,7 +39,7 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   @override
   void onInit() async {
     super.onInit();
-    listYear=generateYearsList(range: 10);
+    listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
     optionMovieData();
     loadGenreMovie();
   }
@@ -51,9 +53,9 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
           url: '$url?limit=20&sort_field=modified.time' )
     );
     if (response?.statusCode == HttpStatus.ok) {
-      if(response?.status == 'success') {//success with 'data' and true with 'items' and 'movies'
+      if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
         if(response?.data !=null){
-          movieByOption.value=MoviesModel.fromJson(response!.data!,"");
+          movieByOption.value=MoviesModel.fromJson(response!.data!,DefaultString.NULL);
           for (var item in movieByOption.value.list_movie!) {
             listNewUpdateMovie.add(item);
           }
@@ -64,15 +66,15 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
       }
       else {
         Alert.showError(
-            title: "ERROR",
-            message:"ERROR_MESSAGE",
-            buttonText:  "OK");
+            title: CommonString.ERROR,
+            message:CommonString.ERROR_DATA_MESSAGE,
+            buttonText:  CommonString.CANCEL);
       }
     } else {
       Alert.showError(
-          title: "ERROR",
-          message:"ERROR_MESSAGE",
-          buttonText:  "OK");
+          title: CommonString.ERROR,
+          message:CommonString.ERROR_URL_MESSAGE,
+          buttonText:  CommonString.CANCEL);
     }
   }
   ///***************************************
@@ -80,25 +82,25 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     listMovieModel=[];
     final BaseResponse? response;
     response = await optionMovieRepository.loadData(OptionMovieModel(
-      url: '$url?category=$genre${selectYear.value=="Năm"? '' : '&year=${selectYear.value}'}${selectCountry.value.slug=="Quốc Gia"? '' : '&country=${selectCountry.value.slug}'}',
+      url: '$url?category=$genre${selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${selectYear.value}'}${selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${selectCountry.value.slug}'}',
     ));
     update();
     if (response?.statusCode == HttpStatus.ok) {
-      if(response?.status == 'success') {//success with 'data' and true with 'items' and 'movies'
+      if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
         listMovieModel.add( MoviesModel.fromJson(response!.data!,title));
 
       }
       else {
         Alert.showError(
-            title: "ERROR",
-            message:"ERROR_MESSAGE",
-            buttonText:  "OK");
+            title: CommonString.ERROR,
+            message:CommonString.ERROR_DATA_MESSAGE,
+            buttonText:  CommonString.CANCEL);
       }
     } else {
       Alert.showError(
-          title: "ERROR",
-          message:"ERROR_MESSAGE",
-          buttonText:  "OK");
+          title: CommonString.ERROR,
+          message:CommonString.ERROR_URL_MESSAGE,
+          buttonText:  CommonString.CANCEL);
     }
 
 
@@ -123,7 +125,7 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     selectCountry.value=CountryItemModel(slug: countryList[result].slug,name:countryList[result].name );
     loadGenreMovie();
   }
-  List<int> generateYearsList({int range = 10}) {
+  List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {
     int currentYear = DateTime.now().year;
     return List.generate(range + 1, (index) => currentYear - index);
   }
