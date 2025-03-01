@@ -1,6 +1,9 @@
-# mobi_phim
+# Mobiflix
 
-A new Flutter project.
+Một ứng dụng xem phim dành cho các tín đồ phim ảnh.
+
+# Video Demo
+https://photos.app.goo.gl/2ifTeFp7j6CUKyyZ8
 
 ## Getting Started
 
