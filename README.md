@@ -8,7 +8,7 @@ A movie viewing app for movie buffs
 ## Getting Started
 
 This project is a starting point for a Flutter application.
-Xin
+
 A few resources to get you started if this is your first Flutter project:
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
@@ -20,7 +20,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Requirement
 
-- [Flutter Stable channer *3.19.6*](https://docs.flutter.dev/release/archive))
+- [Flutter Stable channer *3.19.6*](https://docs.flutter.dev/release/archive)
 - Dart Sdk *3.4.1*, [How to download Dart Sdk *3.4.1*](https://community.chocolatey.org/packages/dart-sdk/3.4.1#install)
 
 **Make sure the above libraries are installed before running the code.**
