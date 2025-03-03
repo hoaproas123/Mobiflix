@@ -49,7 +49,6 @@ samples, guidance on mobile development, and a full API reference.
 │   ├── 📂 play_movie    # Movie player screen (same structure as `detail_movie`)  
 │   ├── 📂 search_movie  # Movie search screen (same structure as `detail_movie`)  
 │   ├── 📂 splash        # Splash screen  
-├── 📂 responsibility    # Handles business logic  
 ├── 📂 routes           # Manages screen navigation  
 ├── 📂 services         # Common services (authentication, storage, etc.)  
 ├── 📂 widgets          # Reusable widgets across the application  
