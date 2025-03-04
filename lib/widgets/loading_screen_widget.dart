@@ -89,12 +89,8 @@ class VideoLoading extends StatelessWidget {
         return Container(
           height: context.height,
           width: context.width,
-          decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.white.withOpacity(controller.borderAnimation.value), // Viền nhấp nháy
-                width: 5,
-              ),
-          ),
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(color: Colors.white.withOpacity(controller.borderAnimation.value)),
         );
       },);
 

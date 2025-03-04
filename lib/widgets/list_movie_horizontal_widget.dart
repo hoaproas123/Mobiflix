@@ -2,8 +2,11 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/cache_manager.dart';
 import 'package:mobi_phim/models/item_movie.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:mobi_phim/widgets/loading_screen_widget.dart';
 
@@ -30,7 +33,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: List.generate(6, (index) {
+          colors: List.generate(AppNumber.DEFAULT_NUMBER_OF_COLOR, (index) {
             double lightness = controller.hsl.lightness * (1 - (index * 0.17)); // Giảm 15% mỗi bước
             return controller.hsl.withLightness(lightness.clamp(0.0, 1.0)).toColor();
           }),
@@ -40,7 +43,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
       ),
       child: listMovie?.length==0 ?
       const Text(
-        'Không tìm thấy kết quả.',
+        MovieString.NO_RESULT_TITLE,
         style: TextStyle(
           color: Colors.white,
           fontSize: 30,),
@@ -56,7 +59,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
             width: context.width,
             child: TextButton(
               onPressed: (){
-                Get.toNamed('home/detailMovie',arguments: listMovie?[index].slug??"");
+                Get.toNamed(Routes.DETAIL_MOVIE,arguments: listMovie?[index].slug ?? DefaultString.NULL);
               },
               style: ButtonStyle(
                   padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
@@ -73,8 +76,8 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: context.width*3/13,
-                      height: context.height*1/6,
+                      height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/7,
+                      width: (context.orientation==Orientation.portrait ? context.width : context.height) *3/13,
                       child: FadeIn(
                         duration: const Duration(seconds: 1),
                         child: Stack(
@@ -88,7 +91,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                                 const SizedBox()
                                     :
                                 CachedNetworkImage(
-                                  imageUrl: title == 'Phim Mới Cập Nhật' ?
+                                  imageUrl: title == MovieString.NEW_UPDATE_TITLE ?
                                   (listMovie![index].poster_url!)
                                       :
                                   DomainProvider.imgUrl+(listMovie![index].poster_url! ),
@@ -104,15 +107,17 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                             Positioned(
                                 bottom: 1,
                                 child: Container(
-                                  height: context.height*1/56,
-                                  width: context.width*1/10,
+                                  height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/56,
+                                  width: (context.orientation==Orientation.portrait ? context.width : context.height) *1/10,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                       color: Colors.red.shade500,
                                       borderRadius: BorderRadius.circular(3)
                                   ),
                                   child: Text(
-                                    (listMovie![index].episode_current??"").contains("Hoàn Tất")|| (listMovie![index].episode_current??"").contains("Full")? listMovie![index].quality ?? "" : 'Tập Mới',
+                                    (listMovie![index].episode_current??DefaultString.NULL).contains(MovieString.COMPLETED_MOVIE_TITLE1) ||
+                                        (listMovie![index].episode_current??DefaultString.NULL).contains(MovieString.COMPLETED_MOVIE_TITLE2) ?
+                                            listMovie![index].quality ?? DefaultString.NULL : MovieString.NEW_EPISODE_TITLE,
                                     style: const TextStyle(
                                         fontSize: 7,
                                         color: Colors.white
@@ -127,7 +132,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                     const SizedBox(width: 10,),
                     SizedBox(
                         width: context.width*8/13,
-                        child: Text(listMovie?[index].name ?? "" ,style: const TextStyle(fontSize: 18,color: Colors.white),)
+                        child: Text(listMovie?[index].name ?? DefaultString.NULL,style: const TextStyle(fontSize: 18,color: Colors.white),)
                     )
                   ],
                 ),
@@ -141,7 +146,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                 width: context.width,
                 child: TextButton(
                   onPressed: (){
-                    Get.toNamed('home/detailMovie',arguments: listMovie?[index].slug??"");
+                    Get.toNamed(Routes.DETAIL_MOVIE,arguments: listMovie?[index].slug??DefaultString.NULL);
                   },
                   style: ButtonStyle(
                       padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
@@ -158,8 +163,8 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          width: context.width*3/13,
-                          height: context.height*1/6,
+                          height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/7,
+                          width: (context.orientation==Orientation.portrait ? context.width : context.height) *3/13,
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -172,7 +177,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                                       :
                                   Ink.image(
                                     image: NetworkImage(
-                                      title == 'Phim Mới Cập Nhật' ? (listMovie![index].poster_url!)
+                                      title == MovieString.NEW_UPDATE_TITLE ? (listMovie![index].poster_url!)
                                           :
                                       DomainProvider.imgUrl+(listMovie![index].poster_url! ),
                                     ),
@@ -185,15 +190,17 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                               Positioned(
                                   bottom: 1,
                                   child: Container(
-                                    height: context.height*1/56,
-                                    width: context.width*1/10,
+                                    height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/56,
+                                    width: (context.orientation==Orientation.portrait ? context.width : context.height) *1/10,
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                         color: Colors.red.shade500,
                                         borderRadius: BorderRadius.circular(3)
                                     ),
                                     child: Text(
-                                      (listMovie![index].episode_current??"").contains("Hoàn Tất")|| (listMovie![index].episode_current??"").contains("Full")? listMovie![index].quality ?? "" : 'Tập Mới',
+                                      (listMovie![index].episode_current??DefaultString.NULL).contains(MovieString.COMPLETED_MOVIE_TITLE1) ||
+                                          (listMovie![index].episode_current??DefaultString.NULL).contains(MovieString.COMPLETED_MOVIE_TITLE2) ?
+                                              listMovie![index].quality ?? DefaultString.NULL : MovieString.NEW_EPISODE_TITLE,
                                       style: const TextStyle(
                                           fontSize: 7,
                                           color: Colors.white
@@ -207,7 +214,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                         const SizedBox(width: 10,),
                         SizedBox(
                             width: context.width*8/13,
-                            child: Text(listMovie?[index].name ?? "" ,style: const TextStyle(fontSize: 18,color: Colors.white),)
+                            child: Text(listMovie?[index].name ?? DefaultString.NULL ,style: const TextStyle(fontSize: 18,color: Colors.white),)
                         )
                       ],
                     ),

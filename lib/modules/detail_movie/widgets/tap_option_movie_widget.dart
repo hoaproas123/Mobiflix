@@ -5,6 +5,7 @@ import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/modules/detail_movie/controller/detail_controller.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 
 class BuildTabOption extends StatelessWidget {
   const BuildTabOption({
@@ -76,7 +77,7 @@ class BuildTabOption extends StatelessWidget {
                               return TextButton(
                                 onPressed: (){
                                   controller.saveEpisode(server,episode);
-                                  Get.toNamed('home/detailMovie/playMovie',arguments: [server,episode,controller.slug,listEpisodes]);
+                                  Get.toNamed(Routes.PLAY_MOVIE,arguments: [server,episode,controller.slug,listEpisodes]);
                                 },
                                 style: ButtonStyle(
                                     padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),

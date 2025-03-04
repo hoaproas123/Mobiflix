@@ -6,6 +6,7 @@ import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/modules/detail_movie/controller/detail_controller.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 
 class BuildDetailContentMovie extends StatelessWidget {
   const BuildDetailContentMovie({
@@ -32,7 +33,7 @@ class BuildDetailContentMovie extends StatelessWidget {
               int server = int.parse(inforSave[0]);
               int episode = int.parse(inforSave[1]);
               controller.saveEpisode(server,episode+1);
-              Get.toNamed('home/detailMovie/playMovie', arguments: [server,episode+1, controller.slug, listEpisodes]);
+              Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, controller.slug, listEpisodes]);
             },
             style: ButtonStyle(
                 minimumSize: const WidgetStatePropertyAll(Size(40, 15)),
@@ -54,7 +55,7 @@ class BuildDetailContentMovie extends StatelessWidget {
           ),
         ),
         Html(
-          data: detailMovie?.content?? "",
+          data: detailMovie?.content?? DefaultString.NULL,
           style: {
             "body": Style(
               color: Colors.white,      // Đổi màu chữ thành trắng

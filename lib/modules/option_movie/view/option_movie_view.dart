@@ -7,6 +7,7 @@ import 'package:mobi_phim/data/country_data.dart';
 import 'package:mobi_phim/data/option_view_data.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/option_movie/controller/option_movie_controller.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
@@ -37,7 +38,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                 String addYearQuery=controller.selectYear.value==DefaultString.YEAR ? DefaultString.NULL:'&year=${controller.selectYear.value}';
                 String addCountryQuery=controller.selectCountry.value.slug==DefaultString.COUNTRY ? DefaultString.NULL : '&country=${controller.selectCountry.value.slug}';
                 String addQuery= addYearQuery + addCountryQuery;
-                Get.toNamed('/home/search',arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery]);
+                Get.toNamed(Routes.SEARCH_MOVIE,arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery]);
               },
               icon: const Icon(
                 Icons.search,
@@ -94,9 +95,10 @@ class OptionMovieView extends GetView<OptionMovieController> {
                                     tag: controller.tag,
                                     child: TextButton(
                                       onPressed: (){},
-                                      style: TextButton.styleFrom(
-                                          side: const BorderSide(color: Colors.white, width: 1),
-                                          minimumSize: const Size(40, 15)
+                                      style:  ButtonStyle(
+                                          side: const WidgetStatePropertyAll(BorderSide(color: Colors.white, width: 1)),
+                                          minimumSize: const WidgetStatePropertyAll(Size(40, 15)),
+                                          backgroundColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.4))
                                       ),
                                       child: Text(
                                         controller.title,

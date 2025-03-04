@@ -17,6 +17,7 @@ import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/option_view_model.dart';
 import 'package:mobi_phim/modules/home/model/home_model.dart';
 import 'package:mobi_phim/modules/home/repository/home_repository.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:palette_generator/palette_generator.dart';
 
@@ -178,9 +179,9 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     }
   }
 
-  Future<List> getSavedEpisode(String movieName) async {
+  Future<List> getSavedEpisode(String slug) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(firstMovieItem!.slug!) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
+    return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
   }
   Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
     final prefs = await SharedPreferences.getInstance();
@@ -216,7 +217,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   void onSelectYear(int result,String tag){
     selectYear.value=listYear[result].toString();
     Future.delayed(const Duration(milliseconds: 100),() {
-      Get.toNamed('home/optionMovie',arguments: [selectYear.value,tag,listOptionView[4].url! + selectYear.value]);
+      Get.toNamed(Routes.OPTION_MOVIE,arguments: [selectYear.value,tag,listOptionView[4].url! + selectYear.value]);
     },).then((_) {
       Future.delayed(const Duration(milliseconds: 300),() {
         selectYear.value=DefaultString.YEAR;
@@ -226,7 +227,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   void onSelectCountry(int result,String tag){
     selectCountry.value=listCountry[result].name!;
     Future.delayed(const Duration(milliseconds: 100),() {
-      Get.toNamed('home/optionMovie',arguments: [selectCountry.value,tag,listOptionView[5].url! + listCountry[result].slug!]);
+      Get.toNamed(Routes.OPTION_MOVIE,arguments: [selectCountry.value,tag,listOptionView[5].url! + listCountry[result].slug!]);
     },).then((_) {
       Future.delayed(const Duration(milliseconds: 300),() {
         selectCountry.value=DefaultString.COUNTRY;

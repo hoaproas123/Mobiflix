@@ -2,9 +2,11 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/cache_manager.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/movies_model.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:mobi_phim/widgets/animation_text_widget.dart';
 import 'package:mobi_phim/widgets/loading_screen_widget.dart';
@@ -40,33 +42,33 @@ class ListMovieWidget extends StatelessWidget {
       children: [
         InkWell(
           onTap: () {
-            String selectYear='';
-            String selectCountry='';
-            String category='';
+            String selectYear=DefaultString.NULL;
+            String selectCountry=DefaultString.NULL;
+            String category=DefaultString.NULL;
             if(isHome==false){
-              selectYear= controller.selectYear.value=="Năm"? '' : '&year=${controller.selectYear.value}';
-              selectCountry=controller.selectCountry.value.slug=="Quốc Gia"? '' : '&country=${controller.selectCountry.value.slug}';
-              category=index ==null ? '' : "&category=${controller.listMovieModel[index].pagination!.filterCategory!}";
+              selectYear= controller.selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${controller.selectYear.value}';
+              selectCountry=controller.selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${controller.selectCountry.value.slug}';
+              category=index ==null ? DefaultString.NULL : "&category=${controller.listMovieModel[index].pagination!.filterCategory!}";
             }
             String addQuery=selectYear+selectCountry+category;
-            String slug='';
+            String slug=DefaultString.NULL;
             if(index==null){
               if(isHome==true){
                 slug="${DomainProvider.newUpdateMovieV2}?";
               }
               else{
-                slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? ""}?&sort_field=modified.time";
+                slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?&sort_field=modified.time";
               }
             }
             else{
               if(isHome==true){
-                slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? ""}?";
+                slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?";
               }
               else{
-                slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? ""}?";
+                slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?";
               }
             }
-            Get.toNamed('/home/genreMovie',arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery,title,slug]);
+            Get.toNamed(Routes.GENRE_MOVIE,arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery,title,slug]);
           },
           child: Hero(
             tag: title,
@@ -92,7 +94,7 @@ class ListMovieWidget extends StatelessWidget {
               itemCount: listMovie?.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 2),
                   child: SizedBox(
                     width: 150,
                     child: Stack(
@@ -118,7 +120,7 @@ class ListMovieWidget extends StatelessWidget {
                                 child: InkWell(
                                   overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2)),
                                   onTap: () {
-                                    Get.toNamed('home/detailMovie', arguments: listMovie![index].slug ?? "");
+                                    Get.toNamed(Routes.DETAIL_MOVIE, arguments: listMovie![index].slug ?? DefaultString.NULL);
                                   },
                                 ),
                               ),
@@ -129,8 +131,8 @@ class ListMovieWidget extends StatelessWidget {
                         Positioned(
                             bottom: 5,
                             child: Container(
-                              height: context.height*1/36,
-                              width: context.width*1/6,
+                              height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/36,
+                              width: (context.orientation==Orientation.portrait ? context.width : context.height) *1/6,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   color: Colors.red.shade500,
@@ -138,9 +140,10 @@ class ListMovieWidget extends StatelessWidget {
                               ),
                               child: Text(
                                 url == false ?
-                                listMovie![index].episode_current!.contains('Hoàn Tất') || listMovie![index].episode_current!.contains("Full") ?'Mới Thêm':'Tập Mới'
+                                listMovie![index].episode_current!.contains(MovieString.COMPLETED_MOVIE_TITLE1) ||
+                                    listMovie![index].episode_current!.contains(MovieString.COMPLETED_MOVIE_TITLE2) ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE
                                   :
-                                listMovie![index].status =='completed' ?'Mới Thêm':'Tập Mới',
+                                listMovie![index].status ==MovieString.STATUS_COMPLETED ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE,
                                 style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.white

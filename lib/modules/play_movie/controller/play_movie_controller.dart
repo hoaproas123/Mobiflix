@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/widgets/custom_Controls_Video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
@@ -60,30 +61,30 @@ class PlayMovieController extends GetxController {
             },
           canNext: canNext,
           onNextEpisode: (){
-
-                saveEpisode(currentEpisode+1);
-                Get.offNamed('home/detailMovie/playMovie',arguments: [currentServer,currentEpisode+1,slug,listEpisodes],preventDuplicates: false);
+                saveEpisode(currentServer,currentEpisode+1);
+                Get.offNamed(Routes.PLAY_MOVIE,arguments: [currentServer,currentEpisode+1,slug,listEpisodes],preventDuplicates: false);
             },
           listNameOfEpisodes: listEpisodes![currentServer].server_data!.map((item) => item.name!,).toList(),
           currentEpisode: currentEpisode,
           onShowEpisodeList: (value){
-            saveEpisode(value);
-            Get.offNamed('home/detailMovie/playMovie',arguments: [currentServer,value,slug,listEpisodes],preventDuplicates: false);
+            saveEpisode(currentServer,value);
+            Get.offNamed(Routes.PLAY_MOVIE,arguments: [currentServer,value,slug,listEpisodes],preventDuplicates: false);
           },
             title: listEpisodes![currentServer].server_data![currentEpisode].name!,
         )
     );
 
   }
-  Future<void> saveEpisode(int episodeNumber) async {
+  Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
     final prefs = await SharedPreferences.getInstance();
     if(episodeNumber==listEpisodes![currentServer].server_data!.length-1) {
       await prefs.remove(slug);
     }
     else{
-      await prefs.setInt(slug, episodeNumber);
+      await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
+
 
   @override
   void onClose() {

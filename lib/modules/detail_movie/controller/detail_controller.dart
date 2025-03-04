@@ -109,7 +109,7 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
       await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
-  Future<List> getSavedEpisode(String movieName) async {
+  Future<List> getSavedEpisode(String slug) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
   }

@@ -31,6 +31,7 @@ abstract class MoviePaginationString {
 
 abstract class MovieString {
   static const String NEW_UPDATE_TITLE = "Phim Mới Cập Nhật";
+  static const String NO_RESULT_TITLE = 'Không tìm thấy kết quả.';
   static const String MOVIE = "Movie";
   static const String TV_SERIES = "TV Series";
   static const String STATUS_COMPLETED = "completed";
@@ -44,7 +45,10 @@ abstract class MovieString {
   static const String RELATED_CONTENT_TITLE = "Nội dung tương tự";
   static String NEW_UPDATE_TITLE_COUNTRY (String countryName) => "Phim ${countryName} Mới Cập Nhật";
   static String NEW_UPDATE_TITLE_OPTION (String optionName) => "${optionName} Mới Cập Nhật";
-
+  static const String COMPLETED_MOVIE_TITLE1 = "Hoàn Tất";
+  static const String COMPLETED_MOVIE_TITLE2 = "Full";
+  static const String NEW_EPISODE_TITLE = "Tập Mới";
+  static const String NEW_ADD_TITLE = "Mới Thêm";
 }
 abstract class TagString {
   static const String CLOSE = "close";

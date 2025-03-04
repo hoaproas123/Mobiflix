@@ -6,6 +6,7 @@ import 'package:mobi_phim/modules/home/controller/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/splash/view/splash_screen.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
@@ -35,7 +36,7 @@ class HomeView extends GetView<HomeController> {
                 IconButton(
                   onPressed: (){
                     String addQuery=DefaultString.NULL;
-                    Get.toNamed('/home/search',arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery]);
+                    Get.toNamed(Routes.SEARCH_MOVIE,arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery]);
                   },
                   icon: const Icon(
                     Icons.search,
@@ -83,7 +84,7 @@ class HomeView extends GetView<HomeController> {
                                         child: TextButton(
                                           onPressed: (){
                                             Get.toNamed(
-                                                'home/optionMovie',
+                                                Routes.OPTION_MOVIE,
                                                 arguments: [
                                                   controller.listOptionView[index].optionName.toString(),
                                                   controller.listOptionView[index].optionName.toString(),

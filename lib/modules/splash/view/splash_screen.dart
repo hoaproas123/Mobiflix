@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -55,17 +56,9 @@ class _SplashScreenState extends State<SplashScreen>
         height: context.height,
         width: context.width,
         alignment: Alignment.center,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF141E30), // Xanh đen đậm
-              Color(0xFF243B55), // Xanh than
-              Color(0xFF2B2E4A), // Tím than
-              Color(0xFF1B1B2F), // Đen xanh đậm
-              Color(0xFF121212), // Đen thuần
-              Color(0xFF0F0F0F), // Đen xám
-              Color(0xFF232526), // Xám khói
-            ],
+            colors: AppColors.DEFAULT_BACKGROUND_COLORS,
             begin: Alignment.topCenter,  // Bắt đầu từ trên
             end: Alignment.bottomCenter, // Kết thúc ở dưới
           ),

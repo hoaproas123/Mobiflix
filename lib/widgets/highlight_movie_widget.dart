@@ -3,8 +3,10 @@ import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/cache_manager.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:mobi_phim/widgets/loading_screen_widget.dart';
 class HighlightMovieWidget extends StatelessWidget {
@@ -36,7 +38,7 @@ class HighlightMovieWidget extends StatelessWidget {
       ),
     )
         :
-      Padding(
+    Padding(
       padding: const EdgeInsets.only(top: 30.0),
       child: Column(
         children: [
@@ -56,7 +58,7 @@ class HighlightMovieWidget extends StatelessWidget {
                     const SizedBox()
                     :
                     CachedNetworkImage(
-                      imageUrl: url == true ? controller.firstMovieItem?.poster_url ?? "" : DomainProvider.imgUrl + controller.firstMovieItem!.poster_url!,
+                      imageUrl: url == true ? controller.firstMovieItem?.poster_url ?? DefaultString.NULL : DomainProvider.imgUrl + controller.firstMovieItem!.poster_url!,
                       cacheManager: MyCacheManager.instance,
                       fit: BoxFit.fill,
                       placeholder: (context, url) =>CardHighLightLoading(),
@@ -70,7 +72,7 @@ class HighlightMovieWidget extends StatelessWidget {
                         child: InkWell(
                           overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.1)),
                           onTap: () {
-                            Get.toNamed('home/detailMovie', arguments: controller.firstMovieItem?.slug ?? "");
+                            Get.toNamed(Routes.DETAIL_MOVIE, arguments: controller.firstMovieItem?.slug ?? DefaultString.NULL);
                           },
                         ),
                       ),
@@ -91,14 +93,14 @@ class HighlightMovieWidget extends StatelessWidget {
                         int episode = int.parse(inforSave[1]);
                         controller.saveEpisode(server,episode+1);
                         // print(controller.firstMovieItem.slug);
-                        Get.toNamed('home/detailMovie/playMovie', arguments: [server,episode+1, slug,listEpisodes]);
+                        Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
                       },
                       color: Colors.white,
                       child: const Row(
                         children: [
                           Icon(Icons.play_arrow,color: Colors.black,size: 30,),
                           SizedBox(width: 5,),
-                          Text('Phát',style: TextStyle(fontSize: 20,color: Colors.black),)
+                          Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: 20,color: Colors.black),)
                         ],
                       ),
                     ),
@@ -110,7 +112,7 @@ class HighlightMovieWidget extends StatelessWidget {
             width: context.width-30,
             alignment: Alignment.center,
             child: Text(
-              controller.firstMovieItem?.name?? "",
+              controller.firstMovieItem?.name?? DefaultString.NULL,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               style: const TextStyle(
