@@ -8,7 +8,6 @@ class HttpProvider  {
 
   Future<Response> doPost(String url, dynamic data) {
     var endpoint = dotenv.env['BASEURL'].toString() + url;
-    print(endpoint);
     return httpClient.post(
       endpoint,
       data: data,

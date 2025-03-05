@@ -6,7 +6,6 @@ import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/modules/detail_movie/controller/detail_controller.dart';
-import 'package:mobi_phim/routes/app_pages.dart';
 
 class BuildDetailContentMovie extends StatelessWidget {
   const BuildDetailContentMovie({
@@ -28,13 +27,7 @@ class BuildDetailContentMovie extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextButton(
-            onPressed: () async {
-              List inforSave=await controller.getSavedEpisode(controller.slug);
-              int server = int.parse(inforSave[0]);
-              int episode = int.parse(inforSave[1]);
-              controller.saveEpisode(server,episode+1);
-              Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, controller.slug, listEpisodes]);
-            },
+            onPressed: () => controller.onPlayButtonPress(),
             style: ButtonStyle(
                 minimumSize: const WidgetStatePropertyAll(Size(40, 15)),
                 backgroundColor: const WidgetStatePropertyAll(Colors.white),

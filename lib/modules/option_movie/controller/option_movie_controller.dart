@@ -93,15 +93,12 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
-          print('vô 1');
           movieFromSlug= ItemMovieModel.fromJson(response?.movies);
         }
         if(response?.movies_episodes !=null){
-          print('vô 2');
           response?.movies_episodes.forEach((item){
             listEpisodesMovieFromSlug.add(EpisodesMovieModel.fromJson(item));
           });
-          print(listEpisodesMovieFromSlug);
         }
       }
       else {

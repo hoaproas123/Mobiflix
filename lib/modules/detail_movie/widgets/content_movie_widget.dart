@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_colors.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/modules/detail_movie/controller/detail_controller.dart';
@@ -29,15 +31,12 @@ class BuildContentMovie extends StatelessWidget {
             children: [
               AnimatedGradientText(
                 text: AppString.APP_NAME,
-                colors: List.generate(4, (index) {
-                  double lightness = controller.hslText.value.lightness * (1 - (index * 0.25)); // Giảm 15% mỗi bước
-                  return controller.hslText.value.withLightness(lightness.clamp(0.0, 1.0)).toColor();
-                }),
+                colors: AppColors.TEXT_ANIMATION_COLORS(controller.hslText.value),
                 fontSize: 30.0,
               ),
               WidgetSize.sizedBoxWidth_10,
               Text(
-                detailMovie?.episode_total=='1' ? MovieString.MOVIE : MovieString.TV_SERIES,
+                detailMovie?.episode_total== AppNumber.COUNT_EPISODE_OF_MOVIE.toString() ? MovieString.MOVIE : MovieString.TV_SERIES,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
                   fontSize: 20,

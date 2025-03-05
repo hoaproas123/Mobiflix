@@ -15,4 +15,6 @@ abstract class AppNumber{
   static const int DEFAULT_HEIGHT_OF_FATHER_TABBAR = 80;
   static const int DEFAULT_HEIGHT_OF_CHILD_TABBAR = 30;
   static const int DEFAULT_NUMBER_OF_COLOR = 6;
+
+  static const int COUNT_EPISODE_OF_MOVIE= 1;
 }

@@ -5,7 +5,6 @@ import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/modules/detail_movie/controller/detail_controller.dart';
-import 'package:mobi_phim/routes/app_pages.dart';
 
 class BuildTabOption extends StatelessWidget {
   const BuildTabOption({
@@ -75,10 +74,7 @@ class BuildTabOption extends StatelessWidget {
 
                             children: List.generate(listEpisodes![server].server_data!.length, (episode) {
                               return TextButton(
-                                onPressed: (){
-                                  controller.saveEpisode(server,episode);
-                                  Get.toNamed(Routes.PLAY_MOVIE,arguments: [server,episode,controller.slug,listEpisodes]);
-                                },
+                                onPressed: () => controller.onEpisodeButtonPress(server,episode),
                                 style: ButtonStyle(
                                     padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
                                     shape: WidgetStatePropertyAll(RoundedRectangleBorder( // Hình dạng button

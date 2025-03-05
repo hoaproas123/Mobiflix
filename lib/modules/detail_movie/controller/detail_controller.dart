@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/core/base_response.dart';
@@ -11,6 +12,7 @@ import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/modules/detail_movie/model/detail_model.dart';
 import 'package:mobi_phim/modules/detail_movie/repository/detail_repository.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,6 +37,9 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
   var isPlaying = false.obs; // Trạng thái video (đang phát / dừng)
 
   List<String> listSlugContinueMovie=[];
+
+  double heightEpisodes=AppNumber.AVG_NUMBER_OF_HEIGHT_PER_ROW;
+
   @override
   void onInit() async {
     super.onInit();
@@ -44,7 +49,9 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
       playVideo(movieFromSlug!.trailer_url!);
     }
     tabController = TabController(length: 2, vsync: this);
-
+    if(listEpisodesMovieFromSlug.isNotEmpty) {
+      (listEpisodesMovieFromSlug[0].server_data?.length??AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW) <=AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW ? heightEpisodes : heightEpisodes=((listEpisodesMovieFromSlug[0].server_data?.length??AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW)/AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW).ceil()*heightEpisodes ;
+    }
   }
 
   ///***************************
@@ -114,6 +121,18 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
     return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
   }
 
+  onPlayButtonPress() async {
+    List inforSave=await getSavedEpisode(slug);
+    int server = int.parse(inforSave[0]);
+    int episode = int.parse(inforSave[1]);
+    saveEpisode(server,episode+1);
+    Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug, listEpisodesMovieFromSlug]);
+  }
+
+  onEpisodeButtonPress(int server, int episode){
+    saveEpisode(server,episode);
+    Get.toNamed(Routes.PLAY_MOVIE,arguments: [server,episode,slug,listEpisodesMovieFromSlug]);
+  }
 
   @override
   void onClose() {
