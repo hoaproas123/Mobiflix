@@ -18,6 +18,8 @@ class OptionMovieProvider extends GetConnect {
           statusText: response.statusMessage,
           status: response.data['status'].toString(),
           data: response.data['data'] ?? {},
+          movies: response.data['movie'] ?? {},
+          movies_episodes: response.data['episodes'] ?? [],
           message:
               response.data['message'] ?? "");
     }).catchError((onError) {

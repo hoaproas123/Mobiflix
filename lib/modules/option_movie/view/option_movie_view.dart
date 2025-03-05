@@ -23,9 +23,9 @@ class OptionMovieView extends GetView<OptionMovieController> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Obx(() => AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: controller.backgroundColor.value == Colors.white ?  AppColors.DEFAULT_APPBAR_COLOR :controller.backgroundColor.value,
           elevation: 0,
-          leading: const BackButton(color: Colors.white,style: ButtonStyle(iconSize: WidgetStatePropertyAll(30)),),
           title: Text(
             controller.tag,
             style: const TextStyle(

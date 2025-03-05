@@ -8,10 +8,13 @@ class HttpProvider  {
 
   Future<Response> doPost(String url, dynamic data) {
     var endpoint = dotenv.env['BASEURL'].toString() + url;
+    print(endpoint);
     return httpClient.post(
       endpoint,
       data: data,
-      options: Options(contentType: Headers.formUrlEncodedContentType),
+      options: Options(
+        contentType: Headers.formUrlEncodedContentType,
+      ),
     );
 
   }

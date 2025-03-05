@@ -25,8 +25,22 @@ class DetailMovieView extends GetView<DetailController> {
       }
       return Scaffold(
         backgroundColor: Colors.black,
+
         appBar:context.orientation==Orientation.landscape ?
-        null
+        AppBar(
+          backgroundColor: controller.textColor.value.withOpacity(0),
+          toolbarHeight: 0,
+          primary: false,
+          leading: BackButton(
+            color: Colors.white,
+            onPressed: (){
+              if (controller.youtubePlayerController !=null &&controller.youtubePlayerController!.value.isPlaying) {
+                controller.youtubePlayerController?.pause();
+              }
+              Get.back();
+            },
+          ),
+        )
             :
         AppBar(
           backgroundColor: controller.textColor.value,

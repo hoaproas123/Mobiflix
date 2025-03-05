@@ -10,12 +10,14 @@ import 'package:mobi_phim/core/base_response.dart';
 import 'package:mobi_phim/data/country_data.dart';
 import 'package:mobi_phim/data/genre_data.dart';
 import 'package:mobi_phim/models/country_item.dart';
+import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/option_movie/model/option_movie_model.dart';
 import 'package:mobi_phim/modules/option_movie/repository/option_movie_repository.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class OptionMovieController extends GetxController with GetTickerProviderStateMixin{
@@ -35,6 +37,9 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
 
   var backgroundColor = Colors.white.obs;
   var hsl = HSLColor.fromColor(Colors.white).obs;
+
+  ItemMovieModel? movieFromSlug;
+  List<EpisodesMovieModel> listEpisodesMovieFromSlug=[];
 
   @override
   void onInit() async {
@@ -61,8 +66,8 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
           }
         }
         firstMovieItem=listNewUpdateMovie[0];
-
         await _updateBackgroundColor(DomainProvider.imgUrl+firstMovieItem!.poster_url!);
+        getMovieFromSlug(firstMovieItem!.slug!);
       }
       else {
         Alert.showError(
@@ -75,6 +80,54 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
           title: CommonString.ERROR,
           message:CommonString.ERROR_URL_MESSAGE,
           buttonText:  CommonString.CANCEL);
+    }
+  }
+  ///***************************
+  Future<void> getMovieFromSlug(String slug) async {
+    listEpisodesMovieFromSlug=[];
+    final BaseResponse? response;
+    response = await optionMovieRepository.loadData(OptionMovieModel(
+      url: DomainProvider.detailMovie + slug,
+    ));
+    update();
+    if (response?.statusCode == HttpStatus.ok) {
+      if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
+        if(response?.movies !=null){
+          print('vô 1');
+          movieFromSlug= ItemMovieModel.fromJson(response?.movies);
+        }
+        if(response?.movies_episodes !=null){
+          print('vô 2');
+          response?.movies_episodes.forEach((item){
+            listEpisodesMovieFromSlug.add(EpisodesMovieModel.fromJson(item));
+          });
+          print(listEpisodesMovieFromSlug);
+        }
+      }
+      else {
+        Alert.showError(
+            title: CommonString.ERROR,
+            message:CommonString.ERROR_DATA_MESSAGE,
+            buttonText:  CommonString.ERROR);
+      }
+    } else {
+      Alert.showError(
+          title: CommonString.ERROR,
+          message: CommonString.ERROR_URL_MESSAGE,
+          buttonText:  CommonString.ERROR);
+    }
+  }
+  Future<List> getSavedEpisode(String slug) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
+  }
+  Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
+    final prefs = await SharedPreferences.getInstance();
+    if(episodeNumber==listEpisodesMovieFromSlug[0].server_data!.length-1) {
+      await prefs.remove(firstMovieItem!.slug!);
+    }
+    else{
+      await prefs.setStringList(firstMovieItem!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
   ///***************************************
