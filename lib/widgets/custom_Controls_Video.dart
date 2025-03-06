@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
-import 'package:video_player/video_player.dart';
 
 class CustomControls extends StatefulWidget {
-  final VideoPlayerController controller;
+  final BetterPlayerController controller;
   final Function() onBack;
   final Function() onNextEpisode;
   final Function(int value) onShowEpisodeList;
@@ -88,8 +88,7 @@ class _CustomControlsState extends State<CustomControls> {
       final RenderBox box = context.findRenderObject() as RenderBox;
       final double screenWidth = box.size.width;
 
-      final Duration videoDuration =
-          widget.controller.value.duration;
+      final Duration videoDuration = widget.controller.videoPlayerController?.value.duration ?? const Duration(seconds: 0);
       final Duration newPosition =
       Duration(milliseconds: (tapPosition / screenWidth * videoDuration.inMilliseconds).toInt());
 
@@ -111,8 +110,8 @@ class _CustomControlsState extends State<CustomControls> {
   void _onHorizontalDragEnd(DragEndDetails details) {
     if (_isSeeking) {
       final currentPosition =
-          widget.controller.value.position;
-      final newPosition = currentPosition + _seekOffset;
+          widget.controller.videoPlayerController?.value.position;
+      final newPosition = currentPosition! + _seekOffset;
 
       widget.controller.seekTo(newPosition);
       setState(() {
@@ -204,14 +203,14 @@ class _CustomControlsState extends State<CustomControls> {
                           children: [
                             IconButton(
                               icon: Icon(
-                                widget.controller.value.isPlaying
+                                widget.controller.videoPlayerController!.value.isPlaying
                                     ? Icons.pause_circle_filled
                                     : Icons.play_circle_filled,
                                 color: Colors.white,
                                 size: 50,
                               ),
                               onPressed: () {
-                                if (widget.controller.value.isPlaying) {
+                                if (widget.controller.videoPlayerController!.value.isPlaying) {
                                   widget.controller.pause();
                                 } else {
                                   widget.controller.play();
@@ -295,15 +294,24 @@ class _CustomControlsState extends State<CustomControls> {
                         child: Column(
                           children: [
                             const SizedBox(height: 40,),
-                            VideoProgressIndicator(
-                              widget.controller,
-                              allowScrubbing: true, // Cho phép kéo để tua
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              colors: const VideoProgressColors(
-                                playedColor: Colors.white,
-                                bufferedColor: Colors.grey,
-                                backgroundColor: Colors.black38,
-                              ),
+                            // Lắng nghe vị trí video bằng StreamBuilder
+                            StreamBuilder<Duration?>(
+                              stream: widget.controller.videoPlayerController?.position.asStream(),
+                              builder: (context, snapshot) {
+                                final position = snapshot.data ?? Duration.zero;
+                                final duration = widget.controller.videoPlayerController?.value.duration ?? Duration.zero;
+
+                                double progress = (duration.inMilliseconds > 0)
+                                    ? position.inMilliseconds / duration.inMilliseconds
+                                    : 0.0;
+
+                                return LinearProgressIndicator(
+                                  value: progress,
+                                  backgroundColor: Colors.black38,
+                                  color: Colors.white,
+                                  minHeight: 5,
+                                );
+                              },
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -311,11 +319,11 @@ class _CustomControlsState extends State<CustomControls> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    _formatDuration(widget.controller.value.position), // Thời gian hiện tại
+                                    _formatDuration(widget.controller.videoPlayerController?.value.position?? Duration(seconds: 0)), // Thời gian hiện tại
                                     style: const TextStyle(color: Colors.white, fontSize: 14),
                                   ),
                                   Text(
-                                    _formatDuration(widget.controller.value.duration), // Tổng thời gian phim
+                                    _formatDuration(widget.controller.videoPlayerController?.value.duration?? Duration(seconds: 0)), // Tổng thời gian phim
                                     style: const TextStyle(color: Colors.white, fontSize: 14),
                                   ),
                                 ],

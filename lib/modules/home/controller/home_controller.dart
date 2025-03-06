@@ -64,11 +64,17 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
     fadeAnimation = Tween<double>(begin: 1, end: 0).animate(animationController);
     listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
-    newUpdateMovieData(null);
-    loadGenreMovie();
+    onLoading();
     Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() {
       isSplash.value=false;
     },);
+  }
+  onLoading(){
+    listNewUpdateMovie=[];
+    listMovieModel=[];
+    listEpisodesMovieFromSlug=[];
+    newUpdateMovieData(null);
+    loadGenreMovie();
   }
   ///***************************
   Future<void> newUpdateMovieData(HomeModel? data) async {
@@ -90,8 +96,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
           });
         }
         firstMovieItem=listNewUpdateMovie[0];
-        await _updateBackgroundColor(listNewUpdateMovie[0].poster_url??"");
         getMovieFromSlug(firstMovieItem!.slug!);
+        await _updateBackgroundColor(listNewUpdateMovie[0].poster_url??"");
         // print(listNewUpdateMovie[2].poster_url);
           // moviesModel=MoviesModel.fromJson(response!.data!);
           // print(moviesModel!.list_movie?[1].name);
@@ -101,13 +107,13 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
         Alert.showError(
             title: CommonString.ERROR,
             message:CommonString.ERROR_DATA_MESSAGE,
-            buttonText:  CommonString.ERROR);
+            buttonText:  CommonString.CANCEL);
       }
     } else {
       Alert.showError(
           title: CommonString.ERROR,
           message: CommonString.ERROR_URL_MESSAGE,
-          buttonText:  CommonString.ERROR);
+          buttonText:  CommonString.CANCEL);
     }
     // Alert.closeLoadingIndicator();
   }
@@ -123,19 +129,19 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     update();
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
-        listMovieModel.add( MoviesModel.fromJson(response!.data!,""));
+        listMovieModel.add( MoviesModel.fromJson(response!.data!,DefaultString.NULL));
       }
       else {
         Alert.showError(
             title: CommonString.ERROR,
             message:CommonString.ERROR_DATA_MESSAGE,
-            buttonText:  CommonString.ERROR);
+            buttonText:  CommonString.CANCEL);
       }
     } else {
       Alert.showError(
           title: CommonString.ERROR,
           message: CommonString.ERROR_URL_MESSAGE,
-          buttonText:  CommonString.ERROR);
+          buttonText:  CommonString.CANCEL);
     }
   }
   void loadGenreMovie(){
@@ -169,13 +175,13 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
         Alert.showError(
             title: CommonString.ERROR,
             message:CommonString.ERROR_DATA_MESSAGE,
-            buttonText:  CommonString.ERROR);
+            buttonText:  CommonString.CANCEL);
       }
     } else {
       Alert.showError(
           title: CommonString.ERROR,
           message: CommonString.ERROR_URL_MESSAGE,
-          buttonText:  CommonString.ERROR);
+          buttonText:  CommonString.CANCEL);
     }
   }
 

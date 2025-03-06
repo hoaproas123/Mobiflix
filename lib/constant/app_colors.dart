@@ -15,7 +15,7 @@ abstract class AppColors {
                                                       const Color(0xFF232526), // Xám khói
                                                     ];
   static List<Color> TEXT_ANIMATION_COLORS(HSLColor color,{int length=4}) => List.generate(length, (index) {
-    double lightness =color.lightness * (1 - (index * (length/100))); // Giảm 15% mỗi bước
+    double lightness =color.lightness * (1 - (index * 0.25)); // Giảm 15% mỗi bước
     return color.withLightness(lightness.clamp(0.0, 1.0)).toColor();
   },);
 }

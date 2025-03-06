@@ -1,5 +1,5 @@
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
-import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/modules/play_movie/controller/play_movie_controller.dart';
@@ -22,16 +22,17 @@ class PlayMovieView extends GetView<PlayMovieController> {
               DeviceOrientation.portraitUp,
               DeviceOrientation.portraitDown,
             ]);
-            controller.videoController.dispose();
                   },
         child: Scaffold(
           body: Container(
             color: Colors.black,
             child: Center(
-                child: controller.chewieController == null ?
-                CircularProgressIndicator(color: Colors.white,)
-                    :
-                Chewie(controller: controller.chewieController!)
+                child: Stack(
+                  children: [
+                    BetterPlayer(controller: controller.betterPlayerController),
+                    controller.customButtonVideo(),
+                  ],
+                )
             ),
           ),
         ),

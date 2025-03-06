@@ -131,8 +131,7 @@ class ListMovieWidget extends StatelessWidget {
                         Positioned(
                             bottom: 5,
                             child: Container(
-                              height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/36,
-                              width: (context.orientation==Orientation.portrait ? context.width : context.height) *1/6,
+                              padding: EdgeInsets.symmetric(horizontal: 4,vertical: 2),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   color: Colors.red.shade500,

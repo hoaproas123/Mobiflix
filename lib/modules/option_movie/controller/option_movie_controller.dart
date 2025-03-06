@@ -66,8 +66,8 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
           }
         }
         firstMovieItem=listNewUpdateMovie[0];
-        await _updateBackgroundColor(DomainProvider.imgUrl+firstMovieItem!.poster_url!);
         getMovieFromSlug(firstMovieItem!.slug!);
+        await _updateBackgroundColor(DomainProvider.imgUrl+firstMovieItem!.poster_url!);
       }
       else {
         Alert.showError(

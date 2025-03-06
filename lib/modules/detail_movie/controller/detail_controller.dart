@@ -43,12 +43,12 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
   @override
   void onInit() async {
     super.onInit();
+    tabController = TabController(length: 2, vsync: this);
     await getMovieFromSlug(slug);
     await _updateTextColor(movieFromSlug!.poster_url!);
     if(movieFromSlug!.trailer_url != '') {
       playVideo(movieFromSlug!.trailer_url!);
     }
-    tabController = TabController(length: 2, vsync: this);
     if(listEpisodesMovieFromSlug.isNotEmpty) {
       (listEpisodesMovieFromSlug[0].server_data?.length??AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW) <=AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW ? heightEpisodes : heightEpisodes=((listEpisodesMovieFromSlug[0].server_data?.length??AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW)/AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW).ceil()*heightEpisodes ;
     }
@@ -101,7 +101,7 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
     youtubePlayerController = YoutubePlayerController(
       initialVideoId: YoutubePlayer.convertUrlToId(url)!,
       flags: const YoutubePlayerFlags(
-        autoPlay: true, // Tự động phát
+        autoPlay: false, // Tự động phát
         mute: false,    // Không tắt tiếng
       ),
     );

@@ -66,37 +66,39 @@ class BuildTabOption extends StatelessWidget {
                     ),
                     SizedBox(
                       height: AppNumber.DEFAULT_HEIGHT_OF_CHILD_TABBAR +heightEpisodes,
-                      child: TabBarView(
-                        controller: controller.tabEpisodeController, // Điều khiển nội dung tab
-                        children: List.generate(listEpisodes!.length, (server) {
-                          return Wrap(
-                            spacing: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TabBarView(
+                          controller: controller.tabEpisodeController, // Điều khiển nội dung tab
+                          children: List.generate(listEpisodes!.length, (server) {
+                            return Wrap(
+                              spacing: 5,
+                              children: List.generate(listEpisodes![server].server_data!.length, (episode) {
+                                return TextButton(
+                                  onPressed: () => controller.onEpisodeButtonPress(server,episode),
+                                  style: ButtonStyle(
+                                      padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
+                                      shape: WidgetStatePropertyAll(RoundedRectangleBorder( // Hình dạng button
+                                        borderRadius: BorderRadius.circular(20),
+                                      )),
+                                      overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2)),
+                                      backgroundColor: WidgetStatePropertyAll(controller.hslText.value.withLightness(0.2+server*0.2).toColor()),
+                                      elevation: const WidgetStatePropertyAll(10),
+                                      minimumSize: const WidgetStatePropertyAll(Size(70,35))
 
-                            children: List.generate(listEpisodes![server].server_data!.length, (episode) {
-                              return TextButton(
-                                onPressed: () => controller.onEpisodeButtonPress(server,episode),
-                                style: ButtonStyle(
-                                    padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
-                                    shape: WidgetStatePropertyAll(RoundedRectangleBorder( // Hình dạng button
-                                      borderRadius: BorderRadius.circular(10),
-                                    )),
-                                    overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2)),
-                                    backgroundColor: WidgetStatePropertyAll(controller.hslText.value.withLightness(0.2+server*0.2).toColor()),
-                                    elevation: const WidgetStatePropertyAll(10),
-                                    minimumSize: const WidgetStatePropertyAll(Size(60,35))
-
-                                ),
-                                child: Text(
-                                  listEpisodes![server].server_data![episode].name!,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: context.width/30
                                   ),
-                                ),
-                              );
-                            },),
-                          );
-                        },),
+                                  child: Text(
+                                    listEpisodes![server].server_data![episode].name!,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15
+                                    ),
+                                  ),
+                                );
+                              },),
+                            );
+                          },),
+                        ),
                       ),
                     ),
                   ]
