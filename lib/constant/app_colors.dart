@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
 
 abstract class AppColors {
   static final Color white = Color(0xffffffff);
@@ -16,6 +17,10 @@ abstract class AppColors {
                                                     ];
   static List<Color> TEXT_ANIMATION_COLORS(HSLColor color,{int length=4}) => List.generate(length, (index) {
     double lightness =color.lightness * (1 - (index * 0.25)); // Giảm 15% mỗi bước
+    return color.withLightness(lightness.clamp(0.0, 1.0)).toColor();
+  },);
+  static List<Color> LINEAR_BACKGROUND_COLORS(HSLColor color,{int length=AppNumber.DEFAULT_NUMBER_OF_COLOR}) => List.generate(length, (index) {
+    double lightness = color.lightness * (1 - (index * 0.17)); // Giảm 15% mỗi bước
     return color.withLightness(lightness.clamp(0.0, 1.0)).toColor();
   },);
 }

@@ -25,7 +25,6 @@ class SearchView extends GetView<SearchMovieController> {
               child: TextField(
                 onChanged: (value) {
                   controller.onSearchChanged(value);
-                  listMovie=controller.movieBySearch.value.list_movie;
                 },
                 style: const TextStyle(color: Colors.white,fontSize: 20),
                 decoration: InputDecoration(

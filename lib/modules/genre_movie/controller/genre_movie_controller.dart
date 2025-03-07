@@ -12,6 +12,7 @@ import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/models/pagination_model.dart';
 import 'package:mobi_phim/modules/genre_movie/model/genre_movie_model.dart';
 import 'package:mobi_phim/modules/genre_movie/repository/genre_movie_repository.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 
 import '../../../models/item_movie.dart';
@@ -89,6 +90,74 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
       duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_SCROLL_MILLISECONDS),
       curve: Curves.easeInOut,
     );
+  }
+
+  Widget buildChangePaginationRow(){
+    return SizedBox(
+      height: 50,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            child: IconButton(
+              onPressed: (){
+                onLoading();
+              },
+              icon: const Icon(Icons.keyboard_arrow_left_rounded),
+              color: Colors.white,
+              style: const ButtonStyle(
+                padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
+                side: WidgetStatePropertyAll(BorderSide(width: 1,color: Colors.white)),
+                minimumSize: WidgetStatePropertyAll(Size(30,30)),
+
+              ),
+            ),
+          )
+        ]
+            +
+
+            List.generate(6, (index) {
+              int totalPage=(movieByGenre.value?.pagination?.totalPages ?? 0);
+              int lastPage=totalPage -(5-index);
+              int currentPage=(movieByGenre.value?.pagination?.currentPage ?? 0);
+              int firstPage=currentPage +index-1;
+              int remainPage=totalPage-currentPage;
+              String numOfPage=remainPage <=2 ? lastPage.toString():
+              (index ==3 ? '...' :
+              index >3 ? lastPage.toString() :
+              firstPage.toString());
+              return lastPage>totalPage || firstPage<=0 || lastPage<=0?
+              const SizedBox()
+                  :
+              SizedBox(
+                child: TextButton(
+                  onPressed: (){
+                    if(numOfPage!='...') {
+                      onLoading(page: int.parse(numOfPage));
+                    }
+                  },
+                  style: ButtonStyle(
+                      padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),
+                      side: const WidgetStatePropertyAll(BorderSide(width: 1,color: Colors.white)),
+                      minimumSize: const WidgetStatePropertyAll(Size(30,30)),
+                      backgroundColor: currentPage.toString()==numOfPage ? const WidgetStatePropertyAll(Colors.white) :null
+
+                  ),
+                  child: Text(
+                    numOfPage,
+                    style: TextStyle(
+                        color: currentPage.toString()==numOfPage ? hsl.withLightness(0.1).toColor() :Colors.white,
+                        fontSize: 15
+                    ),
+                  ),
+                ),
+              );
+            },),
+      ),
+    );
+  }
+  onButtonCardPress(String slug){
+    Get.toNamed(Routes.DETAIL_MOVIE,arguments: slug);
   }
   @override
   void dispose() {

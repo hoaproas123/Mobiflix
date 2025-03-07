@@ -10,6 +10,7 @@ import 'package:mobi_phim/core/base_response.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/search_movie/model/search_model.dart';
 import 'package:mobi_phim/modules/search_movie/repository/search_repository.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 
 class SearchMovieController extends GetxController with GetTickerProviderStateMixin{
@@ -70,6 +71,9 @@ class SearchMovieController extends GetxController with GetTickerProviderStateMi
         },);
       }
     });
+  }
+  onButtonCardPress(String slug){
+    Get.toNamed(Routes.DETAIL_MOVIE,arguments: slug);
   }
   @override
   void dispose() {
