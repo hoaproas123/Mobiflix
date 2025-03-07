@@ -29,8 +29,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   HomeModel? homeModel;
   HomeController({required this.homeRepository});
   List<MoviesModel> listMovieModel =[];
-  List<ItemMovieModel> listNewUpdateMovie=[];
-  ItemMovieModel? firstMovieItem;
+  RxList<ItemMovieModel> listNewUpdateMovie = <ItemMovieModel>[].obs;
+  Rx<ItemMovieModel?> firstMovieItem = Rx<ItemMovieModel?>(null);
   List<ItemMovieModel> listGenreMovie=[];
   List<CountryItemModel> listCountry=countryList;
   List<int> listYear=[];
@@ -42,8 +42,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   var backgroundColor = Colors.white.obs;
   var hsl = HSLColor.fromColor(Colors.white).obs;
 
-  ItemMovieModel? movieFromSlug;
-  List<EpisodesMovieModel> listEpisodesMovieFromSlug=[];
+  Rx<ItemMovieModel?> movieFromSlug = Rx<ItemMovieModel?>(null);
+  RxList<EpisodesMovieModel> listEpisodesMovieFromSlug = <EpisodesMovieModel>[].obs;
 
   List<String> listSlugContinueMovie=[];
 
@@ -53,6 +53,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   late AnimationController animationController;
   late Animation<double> fadeAnimation;
+
   @override
   Future<void> onInit() async {
     super.onInit();
@@ -69,10 +70,12 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
       isSplash.value=false;
     },);
   }
-  onLoading(){
-    listNewUpdateMovie=[];
+  onLoading()  {
+    firstMovieItem.value=null;
+    movieFromSlug.value=null;
+    listNewUpdateMovie.value=[];
     listMovieModel=[];
-    listEpisodesMovieFromSlug=[];
+    listEpisodesMovieFromSlug.value=[];
     newUpdateMovieData(null);
     loadGenreMovie();
   }
@@ -95,8 +98,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
             listNewUpdateMovie.add(ItemMovieModel.fromJson(item));
           });
         }
-        firstMovieItem=listNewUpdateMovie[0];
-        getMovieFromSlug(firstMovieItem!.slug!);
+        firstMovieItem.value=listNewUpdateMovie[0];
+        getMovieFromSlug(firstMovieItem.value!.slug!);
         await _updateBackgroundColor(listNewUpdateMovie[0].poster_url??"");
         // print(listNewUpdateMovie[2].poster_url);
           // moviesModel=MoviesModel.fromJson(response!.data!);
@@ -154,7 +157,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   ///***************************
   Future<void> getMovieFromSlug(String slug) async {
-    listEpisodesMovieFromSlug=[];
+    listEpisodesMovieFromSlug.value=[];
     final BaseResponse? response;
     response = await homeRepository.loadData(HomeModel(
       url: DomainProvider.detailMovie + slug,
@@ -163,7 +166,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
-          movieFromSlug= ItemMovieModel.fromJson(response?.movies);
+          movieFromSlug.value= ItemMovieModel.fromJson(response?.movies);
         }
         if(response?.movies_episodes !=null){
           response?.movies_episodes.forEach((item){
@@ -192,10 +195,10 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
     final prefs = await SharedPreferences.getInstance();
     if(episodeNumber==listEpisodesMovieFromSlug[0].server_data!.length-1) {
-      await prefs.remove(firstMovieItem!.slug!);
+      await prefs.remove(firstMovieItem.value!.slug!);
     }
     else{
-      await prefs.setStringList(firstMovieItem!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
+      await prefs.setStringList(firstMovieItem.value!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
   Future<void> getListSlugContinueMovie() async {

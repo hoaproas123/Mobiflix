@@ -20,7 +20,7 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
   final GenreMovieRepository genreMovieRepository;
   GenreMovieModel? genreMovieModel;
   GenreMovieController({required this.genreMovieRepository});
-  MoviesModel movieByGenre=MoviesModel();
+  Rx<MoviesModel> movieByGenre=MoviesModel().obs;
   final TextEditingController _controller = TextEditingController();
   Timer? _debounce;
   Color backgroundColor = Get.arguments[0];
@@ -33,7 +33,11 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
   @override
   void onInit() async {
     super.onInit();
-    await genreMovieData(1);
+    onLoading();
+  }
+  onLoading({int page=1}){
+    genreMovieData(page);
+    scrollToTop();
   }
   ///***************************
   Future<void> genreMovieData(int page) async {
@@ -45,7 +49,7 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
         if(response?.data !=null){
-          movieByGenre=MoviesModel.fromJson(response!.data!,"");
+          movieByGenre.value=MoviesModel.fromJson(response!.data!,DefaultString.NULL);
         }
       }
       else {
@@ -55,7 +59,7 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
             response?.items.forEach((item){
               listNewUpdateMovie.add(ItemMovieModel.fromJson(item));
             });
-            movieByGenre=MoviesModel(
+            movieByGenre.value=MoviesModel(
                 list_movie: listNewUpdateMovie,
                 pagination: PaginationModel(
                   currentPage: response?.pagination[MoviePaginationString.CURRENT_PAGE],

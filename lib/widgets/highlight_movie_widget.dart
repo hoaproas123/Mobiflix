@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/cache_manager.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
+import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:mobi_phim/widgets/loading_screen_widget.dart';
@@ -22,7 +23,9 @@ class HighlightMovieWidget extends StatelessWidget {
   final bool url;
   @override
   Widget build(BuildContext context) {
-    return controller.firstMovieItem==null || controller.movieFromSlug==null?
+    ItemMovieModel? firstMovieItem = controller.firstMovieItem?.value;
+    ItemMovieModel? movieFromSlug = controller.movieFromSlug?.value;
+    return firstMovieItem==null || movieFromSlug==null?
     Padding(
       padding: const EdgeInsets.only(top: 30.0),
       child: Container(
@@ -57,11 +60,8 @@ class HighlightMovieWidget extends StatelessWidget {
                     elevation: 50,
                     clipBehavior: Clip.antiAlias,
                     color: Colors.transparent,
-                    child: controller.firstMovieItem==null ?
-                    const SizedBox()
-                    :
-                    CachedNetworkImage(
-                      imageUrl: url == true ? controller.firstMovieItem?.poster_url ?? DefaultString.NULL : DomainProvider.imgUrl + controller.firstMovieItem!.poster_url!,
+                    child: CachedNetworkImage(
+                      imageUrl: url == true ? firstMovieItem.poster_url ?? DefaultString.NULL : DomainProvider.imgUrl + firstMovieItem.poster_url!,
                       cacheManager: MyCacheManager.instance,
                       fit: BoxFit.fill,
                       placeholder: (context, url) =>CardHighLightLoading(),
@@ -75,7 +75,7 @@ class HighlightMovieWidget extends StatelessWidget {
                         child: InkWell(
                           overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.1)),
                           onTap: () {
-                            Get.toNamed(Routes.DETAIL_MOVIE, arguments: controller.firstMovieItem?.slug ?? DefaultString.NULL);
+                            Get.toNamed(Routes.DETAIL_MOVIE, arguments: firstMovieItem.slug ?? DefaultString.NULL);
                           },
                         ),
                       ),
@@ -89,8 +89,8 @@ class HighlightMovieWidget extends StatelessWidget {
                   child: Center(
                     child: MaterialButton(
                       onPressed: () async {
-                        String slug= controller.firstMovieItem.slug;
-                        List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug;
+                        String slug= firstMovieItem.slug??DefaultString.NULL;
+                        List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug.value;
                         List inforSave=await controller.getSavedEpisode(slug);
                         int server = int.parse(inforSave[0]);
                         int episode = int.parse(inforSave[1]);
@@ -111,11 +111,12 @@ class HighlightMovieWidget extends StatelessWidget {
               )
             ],
           ),
+          WidgetSize.sizedBoxHeight_10,
           Container(
             width: context.width-30,
             alignment: Alignment.center,
             child: Text(
-              controller.firstMovieItem?.name?? DefaultString.NULL,
+              firstMovieItem.name?? DefaultString.NULL,
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               style: const TextStyle(
@@ -138,7 +139,7 @@ class HighlightMovieWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: context.width*2/7,
+              width: context.width*1/4,
               height: context.height*3/4,
               child: FadeIn(
                 duration: const Duration(seconds: 1),
@@ -146,11 +147,8 @@ class HighlightMovieWidget extends StatelessWidget {
                     elevation: 50,
                     clipBehavior: Clip.antiAlias,
                     color: Colors.transparent,
-                    child: controller.firstMovieItem==null ?
-                    const SizedBox()
-                        :
-                    CachedNetworkImage(
-                      imageUrl: url == true ? controller.firstMovieItem?.poster_url ?? DefaultString.NULL : DomainProvider.imgUrl + controller.firstMovieItem!.poster_url!,
+                    child: CachedNetworkImage(
+                      imageUrl: url == true ? firstMovieItem.poster_url ?? DefaultString.NULL : DomainProvider.imgUrl + firstMovieItem.poster_url!,
                       cacheManager: MyCacheManager.instance,
                       fit: BoxFit.fill,
                       placeholder: (context, url) =>CardHighLightLoading(),
@@ -164,7 +162,7 @@ class HighlightMovieWidget extends StatelessWidget {
                         child: InkWell(
                           overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.1)),
                           onTap: () {
-                            Get.toNamed(Routes.DETAIL_MOVIE, arguments: controller.firstMovieItem?.slug ?? DefaultString.NULL);
+                            Get.toNamed(Routes.DETAIL_MOVIE, arguments: firstMovieItem.slug ?? DefaultString.NULL);
                           },
                         ),
                       ),
@@ -178,17 +176,18 @@ class HighlightMovieWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     WidgetSize.sizedBoxHeight_5,
                     GestureDetector(
                       onTap: (){
-                        Get.toNamed(Routes.DETAIL_MOVIE, arguments: controller.firstMovieItem?.slug ?? DefaultString.NULL);
+                        Get.toNamed(Routes.DETAIL_MOVIE, arguments: firstMovieItem.slug ?? DefaultString.NULL);
                       },
                       child: Container(
                         alignment: Alignment.center,
-                        padding: EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.only(left: 6),
                         child: Text(
-                          controller.firstMovieItem?.name?? DefaultString.NULL,
+                          firstMovieItem.name?? DefaultString.NULL,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: const TextStyle(
@@ -202,7 +201,7 @@ class HighlightMovieWidget extends StatelessWidget {
                     SizedBox(
                       width: context.width/2,
                       child: Html(
-                        data: controller.movieFromSlug?.content?? DefaultString.NULL,
+                        data: movieFromSlug.content?? DefaultString.NULL,
                         style: {
                           "body": Style(
                             color: Colors.white,      // Đổi màu chữ thành trắng
@@ -224,15 +223,15 @@ class HighlightMovieWidget extends StatelessWidget {
                             Row(
                               children: [
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(5),
                                       color: Colors.white,
 
                                   ),
                                   child: Text(
-                                    controller.movieFromSlug?.quality?? DefaultString.NULL,
-                                    style: TextStyle(
+                                    movieFromSlug.quality?? DefaultString.NULL,
+                                    style: const TextStyle(
                                       color: Colors.black,      // Đổi màu chữ thành trắng
                                       fontSize: 15.0,
                                       fontWeight: FontWeight.bold
@@ -241,7 +240,7 @@ class HighlightMovieWidget extends StatelessWidget {
                                 ),
                                 WidgetSize.sizedBoxWidth_10,
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                       color: Colors.grey.withOpacity(0.1),
@@ -249,8 +248,8 @@ class HighlightMovieWidget extends StatelessWidget {
 
                                   ),
                                   child: Text(
-                                    controller.movieFromSlug?.lang?? DefaultString.NULL,
-                                    style: TextStyle(
+                                    movieFromSlug.lang?? DefaultString.NULL,
+                                    style: const TextStyle(
                                         color: Colors.white,      // Đổi màu chữ thành trắng
                                         fontSize: 15.0,
                                     ),
@@ -260,10 +259,10 @@ class HighlightMovieWidget extends StatelessWidget {
                               ],
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Text(
-                                controller.movieFromSlug?.status ==MovieString.STATUS_COMPLETED ? MovieString.SHOW_COMPLETED_STATUS : "${controller.movieFromSlug?.episode_current ?? DefaultString.NULL}/${controller.movieFromSlug?.episode_total ?? DefaultString.NULL}",
-                                style: TextStyle(
+                                movieFromSlug.status ==MovieString.STATUS_COMPLETED ? MovieString.SHOW_COMPLETED_STATUS : "${movieFromSlug.episode_current ?? DefaultString.NULL}/${movieFromSlug.episode_total ?? DefaultString.NULL}",
+                                style: const TextStyle(
                                     color: Colors.white,      // Đổi màu chữ thành trắng
                                     fontSize: 15.0,
                                     fontWeight: FontWeight.bold
@@ -279,15 +278,15 @@ class HighlightMovieWidget extends StatelessWidget {
                       child: Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
                                 color: Colors.white,
 
                             ),
                             child: Text(
-                              controller.movieFromSlug?.list_country[0].name?? DefaultString.NULL,
-                              style: TextStyle(
+                              movieFromSlug.list_country?[0].name?? DefaultString.NULL,
+                              style: const TextStyle(
                                 color: Colors.black,      // Đổi màu chữ thành trắng
                                 fontSize: 15.0,
                                 fontWeight: FontWeight.bold
@@ -296,7 +295,7 @@ class HighlightMovieWidget extends StatelessWidget {
                           ),
                           WidgetSize.sizedBoxWidth_10,
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
                                 color: Colors.grey.withOpacity(0.1),
@@ -304,8 +303,8 @@ class HighlightMovieWidget extends StatelessWidget {
 
                             ),
                             child: Text(
-                              controller.movieFromSlug?.year?? DefaultString.NULL,
-                              style: TextStyle(
+                              movieFromSlug.year?? DefaultString.NULL,
+                              style: const TextStyle(
                                 color: Colors.white,      // Đổi màu chữ thành trắng
                                 fontSize: 15.0,
                               ),
@@ -317,18 +316,18 @@ class HighlightMovieWidget extends StatelessWidget {
                     SizedBox(
                       width: context.width/2,
                       child: Wrap(
-                        children: List.generate(controller.movieFromSlug?.list_category.length, (index) {
+                        children: List.generate(movieFromSlug.list_category!.length, (index) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical:  4.0,horizontal: 6),
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
                                 color: Colors.grey.withOpacity(0.2)
                               ),
                               child: Text(
-                                  controller.movieFromSlug?.list_category[index].name,
-                                style: TextStyle(
+                                  movieFromSlug.list_category?[index].name??DefaultString.NULL,
+                                style: const TextStyle(
                                   color: Colors.white,      // Đổi màu chữ thành trắng
                                   fontSize: 15.0,
                                 ),
@@ -345,7 +344,7 @@ class HighlightMovieWidget extends StatelessWidget {
                         child: MaterialButton(
                           onPressed: () async {
                             String slug= controller.firstMovieItem.slug;
-                            List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug;
+                            List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug.value;
                             List inforSave=await controller.getSavedEpisode(slug);
                             int server = int.parse(inforSave[0]);
                             int episode = int.parse(inforSave[1]);

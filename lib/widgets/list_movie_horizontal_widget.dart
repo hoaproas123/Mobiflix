@@ -230,8 +230,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                     SizedBox(
                       child: IconButton(
                         onPressed: (){
-                          controller.genreMovieData(1);
-                          controller.scrollToTop();
+                          controller.onLoading();
                         },
                         icon: const Icon(Icons.keyboard_arrow_left_rounded),
                         color: Colors.white,
@@ -246,9 +245,9 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                   ]
                     +
                       List.generate(6, (index) {
-                    int totalPage=(controller.movieByGenre?.pagination?.totalPages ?? 0);
+                    int totalPage=(controller.movieByGenre.value?.pagination?.totalPages ?? 0);
                     int lastPage=totalPage -(5-index);
-                    int currentPage=(controller.movieByGenre?.pagination?.currentPage ?? 0);
+                    int currentPage=(controller.movieByGenre.value?.pagination?.currentPage ?? 0);
                     int firstPage=currentPage +index-1;
                     int remainPage=totalPage-currentPage;
                     String numOfPage=remainPage <=2 ? lastPage.toString():
@@ -262,9 +261,8 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                         child: TextButton(
                         onPressed: (){
                           if(numOfPage!='...') {
-                            controller.genreMovieData(int.parse(numOfPage));
+                            controller.onLoading(page: int.parse(numOfPage));
                           }
-                          controller.scrollToTop();
                         },
                         style: ButtonStyle(
                             padding: const WidgetStatePropertyAll(EdgeInsets.all(0)),

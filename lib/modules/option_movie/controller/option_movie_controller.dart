@@ -29,8 +29,8 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   String url=Get.arguments[2];
   List<MoviesModel> listMovieModel =[];
   Rx<MoviesModel> movieByOption=MoviesModel().obs;
-  List<ItemMovieModel> listNewUpdateMovie=[];
-  ItemMovieModel? firstMovieItem;
+  RxList<ItemMovieModel> listNewUpdateMovie = <ItemMovieModel>[].obs;
+  Rx<ItemMovieModel?> firstMovieItem = Rx<ItemMovieModel?>(null);
   var selectYear=DefaultString.YEAR.obs;
   Rx<CountryItemModel> selectCountry=CountryItemModel(name: DefaultString.COUNTRY,slug: DefaultString.COUNTRY).obs;
   List<int> listYear=[];
@@ -38,24 +38,32 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   var backgroundColor = Colors.white.obs;
   var hsl = HSLColor.fromColor(Colors.white).obs;
 
-  ItemMovieModel? movieFromSlug;
-  List<EpisodesMovieModel> listEpisodesMovieFromSlug=[];
+  Rx<ItemMovieModel?> movieFromSlug = Rx<ItemMovieModel?>(null);
+  RxList<EpisodesMovieModel> listEpisodesMovieFromSlug = <EpisodesMovieModel>[].obs;
+
 
   @override
   void onInit() async {
     super.onInit();
     listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
+    onLoading();
+  }
+
+  onLoading()  {
+    firstMovieItem.value=null;
+    movieFromSlug.value=null;
+    listEpisodesMovieFromSlug.value=[];
+    listNewUpdateMovie.value=[];
     optionMovieData();
     loadGenreMovie();
   }
-
   ///***************************
   Future<void> optionMovieData() async {
     await Future.delayed(const Duration(seconds: 1));
     final BaseResponse? response;
     response = await optionMovieRepository.loadData(
         OptionMovieModel(
-          url: '$url?limit=20&sort_field=modified.time' )
+          url: '$url?limit=20&sort_field=modified.time${selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${selectYear.value}'}${selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${selectCountry.value.slug}'}' )
     );
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
@@ -65,9 +73,9 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
             listNewUpdateMovie.add(item);
           }
         }
-        firstMovieItem=listNewUpdateMovie[0];
-        getMovieFromSlug(firstMovieItem!.slug!);
-        await _updateBackgroundColor(DomainProvider.imgUrl+firstMovieItem!.poster_url!);
+        firstMovieItem.value=listNewUpdateMovie[0];
+        getMovieFromSlug(firstMovieItem.value!.slug!);
+        await _updateBackgroundColor(DomainProvider.imgUrl+firstMovieItem.value!.poster_url!);
       }
       else {
         Alert.showError(
@@ -84,7 +92,6 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   }
   ///***************************
   Future<void> getMovieFromSlug(String slug) async {
-    listEpisodesMovieFromSlug=[];
     final BaseResponse? response;
     response = await optionMovieRepository.loadData(OptionMovieModel(
       url: DomainProvider.detailMovie + slug,
@@ -93,7 +100,7 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
-          movieFromSlug= ItemMovieModel.fromJson(response?.movies);
+          movieFromSlug.value= ItemMovieModel.fromJson(response?.movies);
         }
         if(response?.movies_episodes !=null){
           response?.movies_episodes.forEach((item){
@@ -121,10 +128,10 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
     final prefs = await SharedPreferences.getInstance();
     if(episodeNumber==listEpisodesMovieFromSlug[0].server_data!.length-1) {
-      await prefs.remove(firstMovieItem!.slug!);
+      await prefs.remove(firstMovieItem.value!.slug!);
     }
     else{
-      await prefs.setStringList(firstMovieItem!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
+      await prefs.setStringList(firstMovieItem.value!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
   ///***************************************
@@ -169,11 +176,11 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   }
   void onSelectYear(int result){
     selectYear.value=listYear[result].toString();
-    loadGenreMovie();
+    onLoading();
   }
   void onSelectCountry(int result){
     selectCountry.value=CountryItemModel(slug: countryList[result].slug,name:countryList[result].name );
-    loadGenreMovie();
+    onLoading();
   }
   List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {
     int currentYear = DateTime.now().year;
