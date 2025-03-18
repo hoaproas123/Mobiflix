@@ -24,7 +24,6 @@ class SearchMovieController extends GetxController with GetTickerProviderStateMi
   Color backgroundColor = Get.arguments[0];
   HSLColor hsl = Get.arguments[1];
   String addQuery =Get.arguments[2];
-  final ScrollController scrollController = ScrollController();
 
   @override
   void onInit() async {

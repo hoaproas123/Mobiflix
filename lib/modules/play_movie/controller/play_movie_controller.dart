@@ -20,7 +20,6 @@ class PlayMovieController extends GetxController {
 
   late BetterPlayerController betterPlayerController;
   bool canNext=true;
-
   @override
   void onInit() async {
     super.onInit();
@@ -58,8 +57,10 @@ class PlayMovieController extends GetxController {
           SystemChrome.setPreferredOrientations([
             DeviceOrientation.portraitUp,
             DeviceOrientation.portraitDown,
+            DeviceOrientation.landscapeLeft,
+            DeviceOrientation.landscapeRight
           ]);
-          Get.back();
+          Get.back(result: false);
         },
         canNext: canNext,
         onNextEpisode: (){

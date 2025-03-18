@@ -1,6 +1,7 @@
 abstract class AppString {
   static const String APP_NAME = "Mobiflix";
   static const String PLAY_BUTTON = "Phát";
+  static const String FAVORITE_BUTTON = "Yêu thích";
   static const String NEXT_EPISODE_BUTTON = "Tập Tiếp Theo";
   static const String LIST_EPISODE_BUTTON = "Các Tập";
   static const String SEARCH_HINT_TITLE = "Tìm kiếm phim, tác phẩm...";
@@ -49,6 +50,7 @@ abstract class MovieString {
   static const String COMPLETED_MOVIE_TITLE2 = "Full";
   static const String NEW_EPISODE_TITLE = "Tập Mới";
   static const String NEW_ADD_TITLE = "Mới Thêm";
+  static const String LIST_CONTINUE_MOVIE_WATCH_TITLE = "Danh sách Tiếp tục xem";
 }
 abstract class TagString {
   static const String CLOSE = "close";

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
@@ -6,7 +8,6 @@ import 'package:mobi_phim/modules/home/controller/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/splash/view/splash_screen.dart';
-import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
@@ -21,7 +22,7 @@ class HomeView extends GetView<HomeController> {
         Obx(() {
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: controller.backgroundColor.value == Colors.white ?  AppColors.DEFAULT_APPBAR_COLOR : controller.backgroundColor.value,
+              backgroundColor: controller.backgroundColor.value,
               elevation: 0,
               title: GestureDetector(
                 onTap: controller.scrollToTop,
@@ -34,10 +35,7 @@ class HomeView extends GetView<HomeController> {
               ),
               actions: [
                 IconButton(
-                  onPressed: (){
-                    String addQuery=DefaultString.NULL;
-                    Get.toNamed(Routes.SEARCH_MOVIE,arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery]);
-                  },
+                  onPressed: () => controller.onSearchPress(),
                   icon: const Icon(
                     Icons.search,
                     size: 30,
@@ -51,13 +49,10 @@ class HomeView extends GetView<HomeController> {
               child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: controller.backgroundColor.value == Colors.white ?
+                      colors: controller.backgroundColor.value==AppColors.DEFAULT_APPBAR_COLOR ?
                       AppColors.DEFAULT_BACKGROUND_COLORS
                           :
-                      List.generate(AppNumber.DEFAULT_NUMBER_OF_COLOR, (index) {
-                        double lightness = controller.hsl.value.lightness * (1 - (index * 0.17)); // Giảm 15% mỗi bước
-                        return controller.hsl.value.withLightness(lightness.clamp(0.0, 1.0)).toColor();
-                      }),
+                      AppColors.LINEAR_BACKGROUND_COLORS(controller.hsl.value),
                       begin: Alignment.topCenter,
                       end: Alignment.center,
                     ),
@@ -91,16 +86,7 @@ class HomeView extends GetView<HomeController> {
                                           child: Hero(
                                             tag: controller.listOptionView[index].optionName.toString(),
                                             child: TextButton(
-                                              onPressed: (){
-                                                Get.toNamed(
-                                                    Routes.OPTION_MOVIE,
-                                                    arguments: [
-                                                      controller.listOptionView[index].optionName.toString(),
-                                                      controller.listOptionView[index].optionName.toString(),
-                                                      controller.listOptionView[index].url
-                                                    ]
-                                                );
-                                              },
+                                              onPressed: () => controller.onOptionButtonPress(index),
                                               style: TextButton.styleFrom(
                                                 side: const BorderSide(color: Colors.white, width: 1),
                                                 // minimumSize: const Size(40, 15)
@@ -146,9 +132,7 @@ class HomeView extends GetView<HomeController> {
                                                         position: PopupMenuPosition.over,
                                                         color: Colors.transparent.withOpacity(0.8),
 
-                                                        onSelected: (int result) {
-                                                          controller.onSelectYear(result,controller.listOptionView[4].optionName.toString());
-                                                        },
+                                                        onSelected: (int result) =>controller.onSelectYear(result,controller.listOptionView[4].optionName.toString()),
                                                         itemBuilder: (context) {
                                                           return List.generate(controller.listYear.length, (index) {
                                                             return PopupMenuItem<int>(
@@ -196,9 +180,7 @@ class HomeView extends GetView<HomeController> {
                                                         offset: const Offset(-50,0),
                                                         position: PopupMenuPosition.over,
                                                         color: Colors.transparent.withOpacity(0.8),
-                                                        onSelected: (int result) {
-                                                          controller.onSelectCountry(result,controller.listOptionView[5].optionName.toString());
-                                                        },
+                                                        onSelected: (int result) => controller.onSelectCountry(result,controller.listOptionView[5].optionName.toString()),
                                                         itemBuilder: (context) {
                                                           return List.generate(controller.listCountry.length, (index) {
                                                             return PopupMenuItem<int>(
@@ -228,7 +210,8 @@ class HomeView extends GetView<HomeController> {
                           ),
                           HighlightMovieWidget(controller: controller,),
                           WidgetSize.sizedBoxHeight_15,
-                          ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE,controller: controller,),
+                          ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
+                          ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE,controller: controller,listType: ListType.NEW_UPDATE_MOVIE,),
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),

@@ -22,8 +22,6 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
   GenreMovieModel? genreMovieModel;
   GenreMovieController({required this.genreMovieRepository});
   Rx<MoviesModel> movieByGenre=MoviesModel().obs;
-  final TextEditingController _controller = TextEditingController();
-  Timer? _debounce;
   Color backgroundColor = Get.arguments[0];
   HSLColor hsl = Get.arguments[1];
   String addQuery =Get.arguments[2];
@@ -85,11 +83,14 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
     // Alert.closeLoadingIndicator();
   }
   void scrollToTop() {
-    scrollController.animateTo(
-      0.0,
-      duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_SCROLL_MILLISECONDS),
-      curve: Curves.easeInOut,
-    );
+    if(scrollController.hasClients) {
+        scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_SCROLL_MILLISECONDS),
+          curve: Curves.easeInOut,
+        );
+    }
+
   }
 
   Widget buildChangePaginationRow(){
@@ -156,15 +157,14 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
       ),
     );
   }
+  onSearchPress(){
+    Get.toNamed(Routes.SEARCH_MOVIE,arguments: [backgroundColor,hsl,addQuery]);
+  }
   onButtonCardPress(String slug){
     Get.toNamed(Routes.DETAIL_MOVIE,arguments: slug);
   }
   @override
   void dispose() {
-    _controller.dispose();
-    _debounce?.cancel();
     super.dispose();
   }
-
-
 }

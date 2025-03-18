@@ -25,7 +25,8 @@ class HighlightMovieWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     ItemMovieModel? firstMovieItem = controller.firstMovieItem?.value;
     ItemMovieModel? movieFromSlug = controller.movieFromSlug?.value;
-    return firstMovieItem==null || movieFromSlug==null?
+    return context.orientation==Orientation.portrait ?
+    firstMovieItem==null || movieFromSlug==null?
     Padding(
       padding: const EdgeInsets.only(top: 30.0),
       child: Container(
@@ -43,7 +44,6 @@ class HighlightMovieWidget extends StatelessWidget {
       ),
     )
         :
-    context.orientation==Orientation.portrait ?
     Padding(
       padding: const EdgeInsets.only(top: 30.0),
       child: Column(
@@ -84,28 +84,32 @@ class HighlightMovieWidget extends StatelessWidget {
                 ),
               ),
               Positioned(
-                  width: 130,
+                  width: 120,
                   bottom: 30,
                   child: Center(
-                    child: MaterialButton(
-                      onPressed: () async {
-                        String slug= firstMovieItem.slug??DefaultString.NULL;
-                        List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug.value;
-                        List inforSave=await controller.getSavedEpisode(slug);
-                        int server = int.parse(inforSave[0]);
-                        int episode = int.parse(inforSave[1]);
-                        controller.saveEpisode(server,episode+1);
-                        // print(controller.firstMovieItem.slug);
-                        Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
-                      },
-                      color: Colors.white,
-                      child: const Row(
-                        children: [
-                          Icon(Icons.play_arrow,color: Colors.black,size: 30,),
-                          SizedBox(width: 5,),
-                          Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: 20,color: Colors.black),)
-                        ],
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MaterialButton(
+                          onPressed: () async {
+                            String slug= firstMovieItem.slug??DefaultString.NULL;
+                            List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug.value;
+                            List inforSave=await controller.getSavedEpisode(slug);
+                            int server = int.parse(inforSave[0]);
+                            int episode = int.parse(inforSave[1]);
+                            controller.saveEpisode(server,episode+1);
+                            Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
+                          },
+                          color: Colors.white,
+                          child: const Row(
+                            children: [
+                              Icon(Icons.play_arrow,color: Colors.black,size: 30,),
+                              SizedBox(width: 5,),
+                              Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: 20,color: Colors.black),)
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   )
               )
@@ -130,6 +134,38 @@ class HighlightMovieWidget extends StatelessWidget {
       ),
     )
     :
+    firstMovieItem==null || movieFromSlug==null?
+    Padding(
+      padding: const EdgeInsets.only(top: 30.0,left: 8,right: 8),
+      child: SizedBox(
+        width: context.width,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: context.width*1/4,
+              height: context.height*3/4,
+              child: Card(
+                  elevation: 50,
+                  clipBehavior: Clip.antiAlias,
+                  color: Colors.transparent,
+                  child: CardHighLightLoading()
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20),
+              child: Container(
+                height: context.height*3/4,
+                width: context.width/2,
+                color: Colors.transparent,
+              ),
+            ),
+          ],
+        ),
+      ),
+    )
+        :
     Padding(
       padding: const EdgeInsets.only(top: 30.0,left: 8,right: 8),
       child: SizedBox(
@@ -343,13 +379,12 @@ class HighlightMovieWidget extends StatelessWidget {
                         width: context.width/2,
                         child: MaterialButton(
                           onPressed: () async {
-                            String slug= controller.firstMovieItem.slug;
+                            String slug= firstMovieItem.slug?? DefaultString.NULL;
                             List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug.value;
                             List inforSave=await controller.getSavedEpisode(slug);
                             int server = int.parse(inforSave[0]);
                             int episode = int.parse(inforSave[1]);
                             controller.saveEpisode(server,episode+1);
-                            // print(controller.firstMovieItem.slug);
                             Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
                           },
                           color: Colors.white,

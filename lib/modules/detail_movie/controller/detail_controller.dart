@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
@@ -40,6 +41,11 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
 
   double heightEpisodes=AppNumber.AVG_NUMBER_OF_HEIGHT_PER_ROW;
 
+  RxBool isFavorite=false.obs;
+
+  RxBool isFullscreen=false.obs;
+
+  RxBool isMoviescreen=false.obs;
   @override
   void onInit() async {
     super.onInit();
@@ -104,7 +110,30 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
         autoPlay: false, // Tự động phát
         mute: false,    // Không tắt tiếng
       ),
-    );
+    )..addListener(() {
+      if (!youtubePlayerController!.value.isFullScreen ) {
+        isFullscreen.value=false;
+        // Khi thoát chế độ toàn màn hình, khôi phục xoay dọc
+        isMoviescreen.value==false ?
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ])
+        :
+        SystemChrome.setPreferredOrientations([
+
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ])
+        ;
+      }
+      else{
+        isFullscreen.value=true;
+      }
+
+    });
     // ..loadApiKey('AIzaSyD1qeKOmospREbLGzWbM9p2xhqbcC-ew7Y');
   }
   Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
@@ -126,13 +155,19 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
     int server = int.parse(inforSave[0]);
     int episode = int.parse(inforSave[1]);
     saveEpisode(server,episode+1);
-    Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug, listEpisodesMovieFromSlug]);
+    isMoviescreen.value=true;
+    isMoviescreen.value = await Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug, listEpisodesMovieFromSlug]);
+  }
+  onFavoriteButtonPress(){
+    isFavorite.value= !isFavorite.value;
   }
 
-  onEpisodeButtonPress(int server, int episode){
+  onEpisodeButtonPress(int server, int episode) async{
     saveEpisode(server,episode);
-    Get.toNamed(Routes.PLAY_MOVIE,arguments: [server,episode,slug,listEpisodesMovieFromSlug]);
+    isMoviescreen.value=true;
+    isMoviescreen.value = await Get.toNamed(Routes.PLAY_MOVIE,arguments: [server,episode,slug,listEpisodesMovieFromSlug]);
   }
+  @override
 
   @override
   void onClose() {

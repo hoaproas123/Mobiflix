@@ -18,7 +18,10 @@ class DetailMovieView extends GetView<DetailController> {
     return Obx(() {
       return Scaffold(
         backgroundColor: Colors.black,
-        appBar: AppBar(
+        appBar: controller.isFullscreen.value ?
+        null
+            :
+        AppBar(
           backgroundColor: controller.textColor.value,
           leading: const BackButton(
             color: Colors.white,
@@ -30,7 +33,10 @@ class DetailMovieView extends GetView<DetailController> {
         FadeIn(
           duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_FADE_IN_MILLISECONDS),
           child: SingleChildScrollView(
-            child: context.orientation==Orientation.landscape ?
+            child: controller.isFullscreen.value ?
+            BuildAvatarMovie(detailMovie: controller.movieFromSlug,controller: controller,)
+                :
+            context.orientation==Orientation.landscape ?
               Column(
                 children: [
                   Row(
@@ -68,7 +74,6 @@ class DetailMovieView extends GetView<DetailController> {
     }) ;
   }
 }
-
 
 
 

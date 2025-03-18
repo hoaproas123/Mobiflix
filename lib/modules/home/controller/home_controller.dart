@@ -1,9 +1,12 @@
 
 import 'dart:async';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
+import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/alert.dart';
@@ -36,10 +39,13 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   List<int> listYear=[];
   List<OptionViewModel> listOptionView=listOption;
 
+  List<ItemMovieModel> listContinueMovieModel =[];
+  List<List<EpisodesMovieModel>> listContinueEpisodeModel =[];
+
   var selectYear=DefaultString.YEAR.obs;
   var selectCountry=DefaultString.COUNTRY.obs;
 
-  var backgroundColor = Colors.white.obs;
+  var backgroundColor = AppColors.DEFAULT_APPBAR_COLOR.obs;
   var hsl = HSLColor.fromColor(Colors.white).obs;
 
   Rx<ItemMovieModel?> movieFromSlug = Rx<ItemMovieModel?>(null);
@@ -75,9 +81,12 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     movieFromSlug.value=null;
     listNewUpdateMovie.value=[];
     listMovieModel=[];
+    listContinueMovieModel =[];
+    listContinueEpisodeModel=[];
     listEpisodesMovieFromSlug.value=[];
     newUpdateMovieData(null);
     loadGenreMovie();
+    getListContinueMovie();
   }
   ///***************************
   Future<void> newUpdateMovieData(HomeModel? data) async {
@@ -188,6 +197,40 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     }
   }
 
+  ///***************************
+  Future<void> getContinueMovieFromSlug(String slug) async {
+    listEpisodesMovieFromSlug.value=[];
+    final BaseResponse? response;
+    response = await homeRepository.loadData(HomeModel(
+      url: DomainProvider.detailMovie + slug,
+    ));
+    update();
+    if (response?.statusCode == HttpStatus.ok) {
+      if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
+        if(response?.movies !=null){
+          listContinueMovieModel.add(ItemMovieModel.fromJson(response?.movies));
+        }
+        if(response?.movies_episodes !=null){
+          List<EpisodesMovieModel> listEpisode=[];
+          response?.movies_episodes.forEach((item){
+            listEpisode.add(EpisodesMovieModel.fromJson(item));
+          });
+          listContinueEpisodeModel.add(listEpisode);
+        }
+      }
+      else {
+        Alert.showError(
+            title: CommonString.ERROR,
+            message:CommonString.ERROR_DATA_MESSAGE,
+            buttonText:  CommonString.CANCEL);
+      }
+    } else {
+      Alert.showError(
+          title: CommonString.ERROR,
+          message: CommonString.ERROR_URL_MESSAGE,
+          buttonText:  CommonString.CANCEL);
+    }
+  }
   Future<List> getSavedEpisode(String slug) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
@@ -201,10 +244,12 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
       await prefs.setStringList(firstMovieItem.value!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
-  Future<void> getListSlugContinueMovie() async {
+  Future<void> getListContinueMovie() async {
     final prefs = await SharedPreferences.getInstance();
     listSlugContinueMovie=prefs.getKeys().toList();
-    printInfo(info: "Meo ${listSlugContinueMovie[0]}");
+    for(int i=0;i<listSlugContinueMovie.length;i++){
+      await getContinueMovieFromSlug(listSlugContinueMovie[i]);
+    }
   }
 
   List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {
@@ -243,7 +288,21 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
       },);
     },);
   }
+  onSearchPress(){
+    String addQuery=DefaultString.NULL;
+    Get.toNamed(Routes.SEARCH_MOVIE,arguments: [backgroundColor.value,hsl.value,addQuery]);
+  }
 
+  onOptionButtonPress(int index){
+    Get.toNamed(
+        Routes.OPTION_MOVIE,
+        arguments: [
+          listOptionView[index].optionName.toString(),
+          listOptionView[index].optionName.toString(),
+          listOptionView[index].url
+        ]
+    );
+  }
   void scrollToTop() {
     scrollController.animateTo(
       0.0,

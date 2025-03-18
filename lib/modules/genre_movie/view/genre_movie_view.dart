@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/modules/genre_movie/controller/genre_movie_controller.dart';
-import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/widgets/list_movie_horizontal_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
 
@@ -29,10 +28,7 @@ class GenreMovieView extends GetView<GenreMovieController> {
             ),
             actions: [
               IconButton(
-                onPressed: (){
-                  String addQuery=controller.addQuery;
-                  Get.toNamed(Routes.SEARCH_MOVIE,arguments: [controller.backgroundColor,controller.hsl,addQuery]);
-                },
+                onPressed: () => controller.onSearchPress(),
                 icon: const Icon(
                   Icons.search,
                   size: 30,

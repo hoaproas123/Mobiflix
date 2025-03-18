@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/data/country_data.dart';
 import 'package:mobi_phim/data/option_view_data.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/option_movie/controller/option_movie_controller.dart';
-import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
@@ -24,7 +24,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Obx(() => AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: controller.backgroundColor.value == Colors.white ?  AppColors.DEFAULT_APPBAR_COLOR :controller.backgroundColor.value,
+          backgroundColor: controller.backgroundColor.value,
           elevation: 0,
           title: Text(
             controller.tag,
@@ -34,12 +34,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
           ),
           actions: [
             IconButton(
-              onPressed: (){
-                String addYearQuery=controller.selectYear.value==DefaultString.YEAR ? DefaultString.NULL:'&year=${controller.selectYear.value}';
-                String addCountryQuery=controller.selectCountry.value.slug==DefaultString.COUNTRY ? DefaultString.NULL : '&country=${controller.selectCountry.value.slug}';
-                String addQuery= addYearQuery + addCountryQuery;
-                Get.toNamed(Routes.SEARCH_MOVIE,arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery]);
-              },
+              onPressed: () => controller.onSearchPress(),
               icon: const Icon(
                 Icons.search,
                 size: 30,
@@ -55,13 +50,10 @@ class OptionMovieView extends GetView<OptionMovieController> {
         return Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: controller.backgroundColor.value == Colors.white ?
+                colors: controller.backgroundColor.value==AppColors.DEFAULT_APPBAR_COLOR ?
                 AppColors.DEFAULT_BACKGROUND_COLORS
                     :
-                List.generate(6, (index) {
-                  double lightness = controller.hsl.value.lightness * (1 - (index * 0.17)); // Giảm 15% mỗi bước
-                  return controller.hsl.value.withLightness(lightness.clamp(0.0, 1.0)).toColor();
-                }),
+                AppColors.LINEAR_BACKGROUND_COLORS(controller.hsl.value),
                 begin: Alignment.topCenter,
                 end: Alignment.center,
               ),
@@ -85,9 +77,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                                     side: const BorderSide(color: Colors.white, width: 1),
                                     minimumSize: const Size(30, 30),
                                   ),
-                                  onPressed: (){
-                                    Get.back();
-                                  },
+                                  onPressed: () => Get.back(),
                                   child: const Icon(Icons.close,color: Colors.white,size: 15,)),
                             ),
                           ),
@@ -140,9 +130,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                                         position: PopupMenuPosition.over,
                                         color: Colors.transparent.withOpacity(0.8),
 
-                                        onSelected: (int result) {
-                                          controller.onSelectYear(result);
-                                        },
+                                        onSelected: (int result) => controller.onSelectYear(result),
                                         itemBuilder: (context) {
                                           return List.generate(controller.listYear.length, (index) {
                                             return PopupMenuItem<int>(
@@ -191,9 +179,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                                         offset: const Offset(-50,0),
                                         position: PopupMenuPosition.over,
                                         color: Colors.transparent.withOpacity(0.8),
-                                        onSelected: (int result) {
-                                          controller.onSelectCountry(result);
-                                        },
+                                        onSelected: (int result) => controller.onSelectCountry(result),
                                         itemBuilder: (context) {
                                           return List.generate(countryList.length, (index) {
                                             return PopupMenuItem<int>(
@@ -222,9 +208,13 @@ class OptionMovieView extends GetView<OptionMovieController> {
                   ),
                   HighlightMovieWidget(controller: controller,url: false,),
                   WidgetSize.sizedBoxHeight_15,
-                  controller.tag ==DefaultString.YEAR || controller.selectYear.value!=DefaultString.YEAR || controller.selectCountry.value.name!=DefaultString.COUNTRY ? const SizedBox() :
-                  controller.tag ==DefaultString.COUNTRY ? ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_COUNTRY(controller.title),controller: controller,url: false,isHome:false) :
-                  ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_OPTION(controller.tag),controller: controller,url: false,isHome: false,),
+                  controller.tag ==DefaultString.YEAR || controller.selectYear.value!=DefaultString.YEAR || controller.selectCountry.value.name!=DefaultString.COUNTRY ?
+                  const SizedBox()
+                      :
+                  controller.tag ==DefaultString.COUNTRY ?
+                  ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_COUNTRY(controller.title),controller: controller,url: false,isHome:false,listType: ListType.NEW_UPDATE_MOVIE,)
+                      :
+                  ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_OPTION(controller.tag),controller: controller,url: false,isHome: false,listType: ListType.NEW_UPDATE_MOVIE,),
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

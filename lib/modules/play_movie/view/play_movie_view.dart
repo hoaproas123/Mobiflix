@@ -14,14 +14,11 @@ class PlayMovieView extends GetView<PlayMovieController> {
   Widget build(BuildContext context) {
     return GetBuilder<PlayMovieController>(builder: (controller) {
       return PopScope(
+        canPop: true,
         onPopInvoked: (didPop) {
             controller.onClose();
             WakelockPlus.disable();
             SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge); // Hiển thị lại khi thoát trang
-            SystemChrome.setPreferredOrientations([
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown,
-            ]);
                   },
         child: Scaffold(
           body: Container(

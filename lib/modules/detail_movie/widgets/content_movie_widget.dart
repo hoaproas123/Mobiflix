@@ -90,15 +90,6 @@ class BuildContentMovie extends StatelessWidget {
                         ),
                       ),
                     ),
-                    WidgetSize.sizedBoxWidth_30,
-                    Text(
-                      detailMovie?.lang?? DefaultString.NULL,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 15,
-                      ),
-                    ),
-
                   ],
                 ),
                 Text(

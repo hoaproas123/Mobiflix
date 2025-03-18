@@ -3,6 +3,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
+import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/alert.dart';
@@ -15,6 +17,7 @@ import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/option_movie/model/option_movie_model.dart';
 import 'package:mobi_phim/modules/option_movie/repository/option_movie_repository.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,7 +38,7 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   Rx<CountryItemModel> selectCountry=CountryItemModel(name: DefaultString.COUNTRY,slug: DefaultString.COUNTRY).obs;
   List<int> listYear=[];
 
-  var backgroundColor = Colors.white.obs;
+  var backgroundColor = AppColors.DEFAULT_APPBAR_COLOR.obs;
   var hsl = HSLColor.fromColor(Colors.white).obs;
 
   Rx<ItemMovieModel?> movieFromSlug = Rx<ItemMovieModel?>(null);
@@ -59,7 +62,6 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   }
   ///***************************
   Future<void> optionMovieData() async {
-    await Future.delayed(const Duration(seconds: 1));
     final BaseResponse? response;
     response = await optionMovieRepository.loadData(
         OptionMovieModel(
@@ -181,6 +183,12 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   void onSelectCountry(int result){
     selectCountry.value=CountryItemModel(slug: countryList[result].slug,name:countryList[result].name );
     onLoading();
+  }
+  onSearchPress(){
+    String addYearQuery=selectYear.value==DefaultString.YEAR ? DefaultString.NULL:'&year=${selectYear.value}';
+    String addCountryQuery=selectCountry.value.slug==DefaultString.COUNTRY ? DefaultString.NULL : '&country=${selectCountry.value.slug}';
+    String addQuery= addYearQuery + addCountryQuery;
+    Get.toNamed(Routes.SEARCH_MOVIE,arguments: [backgroundColor.value,hsl.value,addQuery]);
   }
   List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {
     int currentYear = DateTime.now().year;
