@@ -6,7 +6,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/cache_manager.dart';
-import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
@@ -91,15 +90,7 @@ class HighlightMovieWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         MaterialButton(
-                          onPressed: () async {
-                            String slug= firstMovieItem.slug??DefaultString.NULL;
-                            List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug.value;
-                            List inforSave=await controller.getSavedEpisode(slug);
-                            int server = int.parse(inforSave[0]);
-                            int episode = int.parse(inforSave[1]);
-                            controller.saveEpisode(server,episode+1);
-                            Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
-                          },
+                          onPressed: () => controller.onPlayButtonPress(firstMovieItem.slug,controller.listEpisodesMovieFromSlug.value),
                           color: Colors.white,
                           child: const Row(
                             children: [
@@ -378,15 +369,7 @@ class HighlightMovieWidget extends StatelessWidget {
                       child: SizedBox(
                         width: context.width/2,
                         child: MaterialButton(
-                          onPressed: () async {
-                            String slug= firstMovieItem.slug?? DefaultString.NULL;
-                            List<EpisodesMovieModel>? listEpisodes= controller.listEpisodesMovieFromSlug.value;
-                            List inforSave=await controller.getSavedEpisode(slug);
-                            int server = int.parse(inforSave[0]);
-                            int episode = int.parse(inforSave[1]);
-                            controller.saveEpisode(server,episode+1);
-                            Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
-                          },
+                          onPressed: () => controller.onPlayButtonPress(firstMovieItem.slug,controller.listEpisodesMovieFromSlug),
                           color: Colors.white,
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,

@@ -136,10 +136,17 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
     });
     // ..loadApiKey('AIzaSyD1qeKOmospREbLGzWbM9p2xhqbcC-ew7Y');
   }
-  Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
+  Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
-    if(episodeNumber==listEpisodesMovieFromSlug[0].server_data!.length-1) {
-      await prefs.remove(slug);
+    if(prefs.containsKey(slug)){
+      if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
+        await prefs.remove(slug);
+      }
+      else{
+        await prefs.remove(slug).then((value) {
+          prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
+        },);
+      }
     }
     else{
       await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
@@ -154,7 +161,7 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
     List inforSave=await getSavedEpisode(slug);
     int server = int.parse(inforSave[0]);
     int episode = int.parse(inforSave[1]);
-    saveEpisode(server,episode+1);
+    saveEpisode(server,episode+1,slug,listEpisodesMovieFromSlug);
     isMoviescreen.value=true;
     isMoviescreen.value = await Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug, listEpisodesMovieFromSlug]);
   }
@@ -163,7 +170,7 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
   }
 
   onEpisodeButtonPress(int server, int episode) async{
-    saveEpisode(server,episode);
+    saveEpisode(server,episode,slug,listEpisodesMovieFromSlug);
     isMoviescreen.value=true;
     isMoviescreen.value = await Get.toNamed(Routes.PLAY_MOVIE,arguments: [server,episode,slug,listEpisodesMovieFromSlug]);
   }

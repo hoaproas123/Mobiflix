@@ -21,7 +21,7 @@ class BuildContentMovie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: WidgetSize.paddingPageAll_8,
       width: context.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +32,7 @@ class BuildContentMovie extends StatelessWidget {
               AnimatedGradientText(
                 text: AppString.APP_NAME,
                 colors: AppColors.TEXT_ANIMATION_COLORS(controller.hslText.value),
-                fontSize: 30.0,
+                fontSize: 30,
               ),
               WidgetSize.sizedBoxWidth_10,
               Text(

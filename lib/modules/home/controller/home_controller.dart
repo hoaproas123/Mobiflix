@@ -1,11 +1,9 @@
 
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
@@ -39,8 +37,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   List<int> listYear=[];
   List<OptionViewModel> listOptionView=listOption;
 
-  List<ItemMovieModel> listContinueMovieModel =[];
-  List<List<EpisodesMovieModel>> listContinueEpisodeModel =[];
+  RxList<ItemMovieModel> listContinueMovieModel =<ItemMovieModel>[].obs;
+  RxList<List<EpisodesMovieModel>> listContinueEpisodeModel =<List<EpisodesMovieModel>>[].obs;
 
   var selectYear=DefaultString.YEAR.obs;
   var selectCountry=DefaultString.COUNTRY.obs;
@@ -51,7 +49,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   Rx<ItemMovieModel?> movieFromSlug = Rx<ItemMovieModel?>(null);
   RxList<EpisodesMovieModel> listEpisodesMovieFromSlug = <EpisodesMovieModel>[].obs;
 
-  List<String> listSlugContinueMovie=[];
 
   RxBool isSplash=true.obs;
 
@@ -81,8 +78,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     movieFromSlug.value=null;
     listNewUpdateMovie.value=[];
     listMovieModel=[];
-    listContinueMovieModel =[];
-    listContinueEpisodeModel=[];
+    listContinueMovieModel.value =[];
+    listContinueEpisodeModel.value=[];
     listEpisodesMovieFromSlug.value=[];
     newUpdateMovieData(null);
     loadGenreMovie();
@@ -199,7 +196,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   ///***************************
   Future<void> getContinueMovieFromSlug(String slug) async {
-    listEpisodesMovieFromSlug.value=[];
     final BaseResponse? response;
     response = await homeRepository.loadData(HomeModel(
       url: DomainProvider.detailMovie + slug,
@@ -235,18 +231,25 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
   }
-  Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
+  Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
-    if(episodeNumber==listEpisodesMovieFromSlug[0].server_data!.length-1) {
-      await prefs.remove(firstMovieItem.value!.slug!);
+    if(prefs.containsKey(slug)){
+      if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
+        await prefs.remove(slug);
+      }
+      else{
+        await prefs.remove(slug).then((value) {
+          prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
+        },);
+      }
     }
     else{
-      await prefs.setStringList(firstMovieItem.value!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
+      await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
   Future<void> getListContinueMovie() async {
     final prefs = await SharedPreferences.getInstance();
-    listSlugContinueMovie=prefs.getKeys().toList();
+    List<String> listSlugContinueMovie=prefs.getKeys().toList().reversed.toList();
     for(int i=0;i<listSlugContinueMovie.length;i++){
       await getContinueMovieFromSlug(listSlugContinueMovie[i]);
     }
@@ -292,7 +295,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     String addQuery=DefaultString.NULL;
     Get.toNamed(Routes.SEARCH_MOVIE,arguments: [backgroundColor.value,hsl.value,addQuery]);
   }
-
   onOptionButtonPress(int index){
     Get.toNamed(
         Routes.OPTION_MOVIE,
@@ -302,6 +304,22 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
           listOptionView[index].url
         ]
     );
+  }
+  onPlayButtonPress(String slug,List<EpisodesMovieModel> listEpisodes) async {
+    if(listEpisodes.isEmpty){
+      Alert.showError(
+          title: CommonString.ERROR,
+          message:CommonString.ERROR_DATA_MESSAGE,
+          buttonText:  CommonString.CANCEL);
+    }
+    else{
+      List inforSave=await getSavedEpisode(slug);
+      int server = int.parse(inforSave[0]);
+      int episode = int.parse(inforSave[1]);
+      saveEpisode(server,episode+1,slug,listEpisodes);
+      Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
+    }
+
   }
   void scrollToTop() {
     scrollController.animateTo(

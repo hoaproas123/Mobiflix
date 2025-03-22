@@ -42,7 +42,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
       )
           :
       ListView.builder(
-        controller: controller.scrollController ?? null ,
+        controller: controller.scrollController ,
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         itemCount: listMovie?.length,
         itemBuilder: (context, index) {

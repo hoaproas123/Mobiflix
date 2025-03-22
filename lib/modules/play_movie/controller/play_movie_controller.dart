@@ -64,22 +64,30 @@ class PlayMovieController extends GetxController {
         },
         canNext: canNext,
         onNextEpisode: (){
-          saveEpisode(currentServer,currentEpisode+1);
+          saveEpisode(currentServer,currentEpisode+1,slug,listEpisodes!);
           Get.offNamed(Routes.PLAY_MOVIE,arguments: [currentServer,currentEpisode+1,slug,listEpisodes],preventDuplicates: false);
         },
         listNameOfEpisodes: listEpisodes![currentServer].server_data!.map((item) => item.name!,).toList(),
         currentEpisode: currentEpisode,
         onShowEpisodeList: (value){
-          saveEpisode(currentServer,value);
+          saveEpisode(currentServer,value,slug,listEpisodes!);
           Get.offNamed(Routes.PLAY_MOVIE,arguments: [currentServer,value,slug,listEpisodes],preventDuplicates: false);
         },
         title: listEpisodes![currentServer].server_data![currentEpisode].name!,
       );
   }
-  Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
+  Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
-    if(episodeNumber==listEpisodes![currentServer].server_data!.length-1) {
-      await prefs.remove(slug);
+    if(prefs.containsKey(slug)){
+      if(episodeNumber==listEpisodes[currentServer].server_data!.length-1 ) {
+        await prefs.remove(slug);
+      }
+      else{
+        print('vào nè');
+        await prefs.remove(slug).then((value) {
+          prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
+        },);
+      }
     }
     else{
       await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);

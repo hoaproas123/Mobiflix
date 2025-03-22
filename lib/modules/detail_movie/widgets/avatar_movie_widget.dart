@@ -18,7 +18,7 @@ class BuildAvatarMovie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: context.orientation==Orientation.portrait ? 250: context.height,
+      height: context.orientation==Orientation.portrait ? context.height/3 : context.height,
       width: context.width,
       child: detailMovie?.trailer_url != DefaultString.NULL && controller.youtubePlayerController!=null?
       YoutubePlayer(

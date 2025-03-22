@@ -127,13 +127,20 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
   }
-  Future<void> saveEpisode(int serverNumber,int episodeNumber) async {
+  Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
-    if(episodeNumber==listEpisodesMovieFromSlug[0].server_data!.length-1) {
-      await prefs.remove(firstMovieItem.value!.slug!);
+    if(prefs.containsKey(slug)){
+      if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
+        await prefs.remove(slug);
+      }
+      else{
+        await prefs.remove(slug).then((value) {
+          prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
+        },);
+      }
     }
     else{
-      await prefs.setStringList(firstMovieItem.value!.slug!, [serverNumber.toString(),episodeNumber.toString()]);
+      await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
     }
   }
   ///***************************************
@@ -189,6 +196,13 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     String addCountryQuery=selectCountry.value.slug==DefaultString.COUNTRY ? DefaultString.NULL : '&country=${selectCountry.value.slug}';
     String addQuery= addYearQuery + addCountryQuery;
     Get.toNamed(Routes.SEARCH_MOVIE,arguments: [backgroundColor.value,hsl.value,addQuery]);
+  }
+  onPlayButtonPress(String slug,List<EpisodesMovieModel> listEpisodes) async {
+    List inforSave=await getSavedEpisode(slug);
+    int server = int.parse(inforSave[0]);
+    int episode = int.parse(inforSave[1]);
+    saveEpisode(server,episode+1,slug,listEpisodes);
+    Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
   }
   List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {
     int currentYear = DateTime.now().year;

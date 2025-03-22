@@ -48,7 +48,7 @@ class DetailMovieView extends GetView<DetailController> {
                       SizedBox(
                           width: context.width/2,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 20),
+                            padding: WidgetSize.paddingPageLeft_20,
                             child: BuildContentMovie(controller: controller, detailMovie: controller.movieFromSlug),
                           )),
                     ],

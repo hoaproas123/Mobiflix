@@ -39,152 +39,152 @@ class ListMovieWidget extends StatelessWidget {
       }
       if(listType==ListType.CONTINUE_MOVIE_WATCH){
         moviesModel= controller.listMovieModel.length != 0 ? controller.listMovieModel[0] :MoviesModel();
-        listMovie= controller.listContinueMovieModel;
+        listMovie= controller.listContinueMovieModel.value;
       }
       }
     else {
       moviesModel=  controller.listMovieModel[index!]!;
       listMovie=moviesModel?.list_movie ?? [];
       }
-    return
-      Container(
-        child: Column(
-        children: [
-          InkWell(
-            onTap: () {
-              if(listType!=ListType.CONTINUE_MOVIE_WATCH){
-                String selectYear=DefaultString.NULL;
-                String selectCountry=DefaultString.NULL;
-                String category=DefaultString.NULL;
-                if(isHome==false){
-                  selectYear= controller.selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${controller.selectYear.value}';
-                  selectCountry=controller.selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${controller.selectCountry.value.slug}';
-                  category=index ==null ? DefaultString.NULL : "&category=${controller.listMovieModel[index].pagination!.filterCategory!}";
-                }
-                String addQuery=selectYear+selectCountry+category;
-                String slug=DefaultString.NULL;
-                if(index==null){
-                  if(isHome==true){
-                    slug="${DomainProvider.newUpdateMovieV2}?";
-                  }
-                  else{
-                    slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?&sort_field=modified.time";
-                  }
+    return listMovie?.length==0 ?
+      const SizedBox()
+        :
+      Column(
+      children: [
+        InkWell(
+          onTap: () {
+            if(listType!=ListType.CONTINUE_MOVIE_WATCH){
+              String selectYear=DefaultString.NULL;
+              String selectCountry=DefaultString.NULL;
+              String category=DefaultString.NULL;
+              if(isHome==false){
+                selectYear= controller.selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${controller.selectYear.value}';
+                selectCountry=controller.selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${controller.selectCountry.value.slug}';
+                category=index ==null ? DefaultString.NULL : "&category=${controller.listMovieModel[index].pagination!.filterCategory!}";
+              }
+              String addQuery=selectYear+selectCountry+category;
+              String slug=DefaultString.NULL;
+              if(index==null){
+                if(isHome==true){
+                  slug="${DomainProvider.newUpdateMovieV2}?";
                 }
                 else{
-                  if(isHome==true){
-                    slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?";
-                  }
-                  else{
-                    slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?";
-                  }
+                  slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?&sort_field=modified.time";
                 }
-                Get.toNamed(Routes.GENRE_MOVIE,arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery,title,slug]);
               }
-            },
-            child: Hero(
-              tag: title,
-              child: Container(
-                width: context.width,
-                padding: const EdgeInsets.all(10),
-                child: AnimatedGradientText(
-                  text: title,
-                  colors: List.generate(4, (index) {
-                    double lightness = HSLColor.fromColor(Colors.white).lightness * (1 - (index * 0.25)); // Giảm 15% mỗi bước
-                    return HSLColor.fromColor(Colors.white).withLightness(lightness.clamp(0.0, 1.0)).toColor();
-                  }),
-                  fontSize: 20.0,
-                ),
+              else{
+                if(isHome==true){
+                  slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?";
+                }
+                else{
+                  slug="${DomainProvider.moviesByGenre}${moviesModel?.detail_Page?.og_url ?? DefaultString.NULL}?";
+                }
+              }
+              Get.toNamed(Routes.GENRE_MOVIE,arguments: [controller.backgroundColor.value,controller.hsl.value,addQuery,title,slug]);
+            }
+          },
+          child: Hero(
+            tag: title,
+            child: Container(
+              width: context.width,
+              padding: const EdgeInsets.all(10),
+              child: AnimatedGradientText(
+                text: title,
+                colors: List.generate(4, (index) {
+                  double lightness = HSLColor.fromColor(Colors.white).lightness * (1 - (index * 0.25)); // Giảm 15% mỗi bước
+                  return HSLColor.fromColor(Colors.white).withLightness(lightness.clamp(0.0, 1.0)).toColor();
+                }),
+                fontSize: 20.0,
               ),
             ),
           ),
-          SizedBox(
-              height: 250,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                cacheExtent: 20,
-                itemCount: listMovie?.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 2),
-                    child: SizedBox(
-                      width: 150,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          FadeIn(
-                            duration: const Duration(seconds: 1),
-                            child: Card(
-                              elevation: 10,
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: Colors.transparent.withOpacity(0.1),
-                              child: CachedNetworkImage(
-                                imageUrl: (this.index == null)
-                                    ? url==true ? listMovie![index].poster_url! : DomainProvider.imgUrl + listMovie![index].poster_url!
-                                    : DomainProvider.imgUrl + listMovie![index].poster_url!,
-                                cacheManager: MyCacheManager.instance,
+        ),
+        SizedBox(
+            height: 250,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              cacheExtent: 20,
+              itemCount: listMovie?.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 2),
+                  child: SizedBox(
+                    width: 150,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        FadeIn(
+                          duration: const Duration(seconds: 1),
+                          child: Card(
+                            elevation: 10,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            color: Colors.transparent.withOpacity(0.1),
+                            child: CachedNetworkImage(
+                              imageUrl: (this.index == null)
+                                  ? url==true ? listMovie![index].poster_url! : DomainProvider.imgUrl + listMovie![index].poster_url!
+                                  : DomainProvider.imgUrl + listMovie![index].poster_url!,
+                              cacheManager: MyCacheManager.instance,
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) => CardItemLoading(),
+                              errorWidget: (context, url, error) => CardItemLoading(),
+                              imageBuilder: (context, imageProvider) => Ink.image(
+                                image: imageProvider,
                                 fit: BoxFit.fill,
-                                placeholder: (context, url) => CardItemLoading(),
-                                errorWidget: (context, url, error) => CardItemLoading(),
-                                imageBuilder: (context, imageProvider) => Ink.image(
-                                  image: imageProvider,
-                                  fit: BoxFit.fill,
-                                  child: InkWell(
-                                    overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2)),
-                                    onTap: () {
-                                      Get.toNamed(Routes.DETAIL_MOVIE, arguments: listMovie![index].slug ?? DefaultString.NULL);
-                                    },
-                                  ),
+                                child: InkWell(
+                                  overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2)),
+                                  onTap: () {
+                                    Get.toNamed(Routes.DETAIL_MOVIE, arguments: listMovie![index].slug ?? DefaultString.NULL);
+                                  },
                                 ),
-                              )
-                            ),
+                              ),
+                            )
                           ),
-                          listType==ListType.CONTINUE_MOVIE_WATCH ?
-                          Positioned(
-                              child: IconButton(
-                                  onPressed: (){}, 
-                                  icon: Icon(
-                                    Icons.play_circle_outlined,
-                                    size: 90,
-                                    color: Colors.white,
-                                  ),
-                              )
-                          )
-                          :
-                          SizedBox(),
-                          listType==ListType.NEW_UPDATE_MOVIE ?
-                          Positioned(
-                              bottom: 5,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    color: Colors.red.shade500,
-                                    borderRadius: BorderRadius.circular(3)
+                        ),
+                        listType==ListType.CONTINUE_MOVIE_WATCH ?
+                        Positioned(
+                            child: IconButton(
+                                onPressed: () => controller.onPlayButtonPress(listMovie?[index].slug,controller.listContinueEpisodeModel.value[index]),
+                                icon: Icon(
+                                  Icons.play_circle_outlined,
+                                  size: 90,
+                                  color: Colors.white.withOpacity(0.8),
                                 ),
-                                child: Text(
-                                  url == false ?
-                                  listMovie![index].episode_current!.contains(MovieString.COMPLETED_MOVIE_TITLE1) ||
-                                      listMovie![index].episode_current!.contains(MovieString.COMPLETED_MOVIE_TITLE2) ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE
-                                    :
-                                  listMovie![index].status ==MovieString.STATUS_COMPLETED ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE,
-                                  style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white
-                                  ),
+                            )
+                        )
+                        :
+                        const SizedBox(),
+                        listType==ListType.NEW_UPDATE_MOVIE ?
+                        Positioned(
+                            bottom: 5,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.red.shade500,
+                                  borderRadius: BorderRadius.circular(3)
+                              ),
+                              child: Text(
+                                url == false ?
+                                listMovie![index].episode_current!.contains(MovieString.COMPLETED_MOVIE_TITLE1) ||
+                                    listMovie![index].episode_current!.contains(MovieString.COMPLETED_MOVIE_TITLE2) ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE
+                                  :
+                                listMovie![index].status ==MovieString.STATUS_COMPLETED ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE,
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white
                                 ),
-                              )
-                          )
-                              :
-                          const SizedBox()
-                        ],
-                      ),
+                              ),
+                            )
+                        )
+                            :
+                        const SizedBox()
+                      ],
                     ),
-                  );
-                },)
-          ),
-        ],
-            ),
-      );
+                  ),
+                );
+              },)
+        ),
+      ],
+          );
   }
 }

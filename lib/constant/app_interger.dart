@@ -12,7 +12,7 @@ abstract class AppNumber{
   static const int TOTAL_YEAR_RENDER_IN_LIST_YEAR = 10;
 
   static const int DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR = 10;
-  static const int DEFAULT_HEIGHT_OF_FATHER_TABBAR = 70;
+  static const int DEFAULT_HEIGHT_OF_FATHER_TABBAR = 80;
   static const int DEFAULT_HEIGHT_OF_CHILD_TABBAR = 30;
   static const int DEFAULT_NUMBER_OF_COLOR = 6;
 

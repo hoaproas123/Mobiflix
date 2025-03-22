@@ -24,11 +24,15 @@ class PlayMovieView extends GetView<PlayMovieController> {
           body: Container(
             color: Colors.black,
             child: Center(
-                child: Stack(
-                  children: [
-                    BetterPlayer(controller: controller.betterPlayerController),
-                    controller.customButtonVideo(),
-                  ],
+                child: SizedBox(
+                  width: context.width,
+                  height: context.height,
+                  child: Stack(
+                    children: [
+                      BetterPlayer(controller: controller.betterPlayerController),
+                      controller.customButtonVideo(),
+                    ],
+                  ),
                 )
             ),
           ),

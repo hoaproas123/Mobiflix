@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 
 class WidgetSize {
-  static final EdgeInsets paddingPageLeftRight =
-      EdgeInsets.symmetric(horizontal: 12);
-  static final EdgeInsets paddingPageLeftRight_15 =
-      EdgeInsets.symmetric(horizontal: 15);
-  static final EdgeInsets paddingPageLeftRight_25 =
-      EdgeInsets.symmetric(horizontal: 25);
-  static final EdgeInsets paddingAll = EdgeInsets.all(12);
+  static final EdgeInsets paddingPageLeft_20 =
+      EdgeInsets.only(left: 20);
+  static final EdgeInsets paddingPageAll_8 = EdgeInsets.all(8);
+
+
+
 
   static final SizedBox sizedBoxHeight_5 = SizedBox(
     height: 5,

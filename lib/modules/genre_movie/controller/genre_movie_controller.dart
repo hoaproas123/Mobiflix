@@ -118,9 +118,9 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
             +
 
             List.generate(6, (index) {
-              int totalPage=(movieByGenre.value?.pagination?.totalPages ?? 0);
+              int totalPage=(movieByGenre.value.pagination?.totalPages ?? 0);
               int lastPage=totalPage -(5-index);
-              int currentPage=(movieByGenre.value?.pagination?.currentPage ?? 0);
+              int currentPage=(movieByGenre.value.pagination?.currentPage ?? 0);
               int firstPage=currentPage +index-1;
               int remainPage=totalPage-currentPage;
               String numOfPage=remainPage <=2 ? lastPage.toString():
@@ -162,9 +162,5 @@ class GenreMovieController extends GetxController with GetTickerProviderStateMix
   }
   onButtonCardPress(String slug){
     Get.toNamed(Routes.DETAIL_MOVIE,arguments: slug);
-  }
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
