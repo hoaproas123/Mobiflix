@@ -21,7 +21,6 @@ class BuildTabOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize= MediaQuery.of(context).size;
     return Column(
       children: [
         Obx(() => TabBar(
@@ -31,7 +30,7 @@ class BuildTabOption extends StatelessWidget {
           dividerColor: Colors.white,
           indicatorColor: controller.hslText.value.withLightness(0.4).toColor(),
           indicatorSize: TabBarIndicatorSize.tab,
-          labelStyle: TextStyle(fontSize: screenSize.width*0.04),
+          labelStyle: TextStyle(fontSize: context.width*0.04),
           tabs: const [
             Tab(text: MovieString.LIST_EPISODE_TITLE),
             Tab(text: MovieString.RELATED_CONTENT_TITLE),
@@ -55,7 +54,7 @@ class BuildTabOption extends StatelessWidget {
                         dividerColor: Colors.black,
                         indicatorColor: Colors.white,
                         indicatorSize: TabBarIndicatorSize.tab,
-                        labelStyle: TextStyle(fontSize: screenSize.width*0.035),
+                        labelStyle: TextStyle(fontSize: context.width*0.035),
                         tabs: List.generate(listEpisodes!.length, (index) {
                           return Container(
                               height: 30,
@@ -88,14 +87,14 @@ class BuildTabOption extends StatelessWidget {
                                       overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2)),
                                       backgroundColor: WidgetStatePropertyAll(controller.hslText.value.withLightness(0.2+server*0.2).toColor()),
                                       elevation: const WidgetStatePropertyAll(10),
-                                      minimumSize: WidgetStatePropertyAll(Size(screenSize.width*0.18,screenSize.height*0.045))
+                                      minimumSize: WidgetStatePropertyAll(Size(context.width*0.18,context.height*0.045))
 
                                   ),
                                   child: Text(
                                     listEpisodes![server].server_data![episode].name!,
                                     style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: screenSize.width*0.038
+                                        fontSize: context.width*0.038
                                     ),
                                   ),
                                 );

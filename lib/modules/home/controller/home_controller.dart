@@ -251,7 +251,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     final prefs = await SharedPreferences.getInstance();
     List<String> listSlugContinueMovie=prefs.getKeys().toList().reversed.toList();
     for(int i=0;i<listSlugContinueMovie.length;i++){
-      await getContinueMovieFromSlug(listSlugContinueMovie[i]);
+      getContinueMovieFromSlug(listSlugContinueMovie[i]);
     }
   }
 

@@ -23,7 +23,6 @@ class BuildDetailContentMovie extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize= MediaQuery.of(context).size;
     return Column(
       children: [
         Padding(
@@ -45,8 +44,8 @@ class BuildDetailContentMovie extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.play_arrow,color: Colors.black,size: screenSize.width*0.07,),
-                      Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: screenSize.width*0.05,color: Colors.black),)
+                      Icon(Icons.play_arrow,color: Colors.black,size: context.width*0.07,),
+                      Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: context.width*0.05,color: Colors.black),)
                     ],
                   ),
                 ),
@@ -68,11 +67,11 @@ class BuildDetailContentMovie extends StatelessWidget {
                       Obx(() => Icon(
                         controller.isFavorite.value ==true ? Icons.favorite_outlined : Icons.favorite_outline,
                         color: controller.isFavorite.value ==true ? Colors.red : Colors.black,
-                        size: screenSize.width*0.07,
+                        size: context.width*0.07,
                       ),
                       ),
                       SizedBox(width: 5,),
-                      Text(AppString.FAVORITE_BUTTON,style: TextStyle(fontSize: screenSize.width*0.05,color: Colors.black),)
+                      Text(AppString.FAVORITE_BUTTON,style: TextStyle(fontSize: context.width*0.05,color: Colors.black),)
                     ],
                   ),
                 ),
@@ -85,7 +84,7 @@ class BuildDetailContentMovie extends StatelessWidget {
           style: {
             "body": Style(
               color: Colors.white,      // Đổi màu chữ thành trắng
-              fontSize: FontSize(screenSize.width*0.04), // Đổi kích thước chữ thành 15
+              fontSize: FontSize(context.width*0.04), // Đổi kích thước chữ thành 15
             ),
           },
         ),
@@ -99,35 +98,35 @@ class BuildDetailContentMovie extends StatelessWidget {
                 "${MovieString.GENRE_TITLE} : ${(detailMovie?.list_category??[]).map((item) => item.name).join(", ")}" ,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
-                  fontSize: screenSize.width*0.03,
+                  fontSize: context.width*0.03,
                 ),
               ),
               Text(
                 "${MovieString.ACTORS_TITLE}: ${(detailMovie?.actor??[]).map((item) => item).join(", ")}" ,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
-                  fontSize: screenSize.width*0.03,
+                  fontSize: context.width*0.03,
                 ),
               ),
               Text(
                 "${MovieString.DIRECTOR_TITLE}: ${(detailMovie?.director??[]).map((item) => item).join(", ")}" ,
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
-                  fontSize: screenSize.width*0.03,
+                  fontSize: context.width*0.03,
                 ),
               ),
               Text(
                 "${MovieString.COUNTRY_TITLE}: ${(detailMovie?.list_country??[]).map((item) => item.name).join(", ")}",
                 style: TextStyle(
                   color: Colors.white.withOpacity(0.8),
-                  fontSize: screenSize.width*0.03,
+                  fontSize: context.width*0.03,
                 ),
               ),
               Text(
                 '${MovieString.DURATION_TITLE}: ${detailMovie?.time ?? DefaultString.NULL}',
                 style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: screenSize.width*0.03
+                    fontSize: context.width*0.03
                 ),
               ),
             ],

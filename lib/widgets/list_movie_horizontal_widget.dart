@@ -69,8 +69,8 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/7,
-                          width: (context.orientation==Orientation.portrait ? context.width : context.height) *3/13,
+                          height: context.orientation==Orientation.portrait ? context.height*1/7 : context.width*1/3 ,
+                          width: context.orientation==Orientation.portrait ? context.width*3/13 : context.height*6/13 ,
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -96,8 +96,8 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                               Positioned(
                                   bottom: 1,
                                   child: Container(
-                                    height: (context.orientation==Orientation.portrait ? context.height : context.width) *1/56,
-                                    width: (context.orientation==Orientation.portrait ? context.width : context.height) *1/10,
+                                    height: context.orientation==Orientation.portrait ? context.height*1/56 : context.width*1/30 ,
+                                    width: context.orientation==Orientation.portrait ? context.width*1/10 : context.height*1/5 ,
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                         color: Colors.red.shade500,
@@ -107,8 +107,8 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                                       (listMovie![index].episode_current??DefaultString.NULL).contains(MovieString.COMPLETED_MOVIE_TITLE1) ||
                                           (listMovie![index].episode_current??DefaultString.NULL).contains(MovieString.COMPLETED_MOVIE_TITLE2) ?
                                               listMovie![index].quality ?? DefaultString.NULL : MovieString.NEW_EPISODE_TITLE,
-                                      style: const TextStyle(
-                                          fontSize: 7,
+                                      style: TextStyle(
+                                          fontSize: context.width*0.023,
                                           color: Colors.white
                                       ),
                                     ),
@@ -119,8 +119,12 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                         ),
                         const SizedBox(width: 10,),
                         SizedBox(
-                            width: context.width*8/13,
-                            child: Text(listMovie?[index].name ?? DefaultString.NULL ,style: const TextStyle(fontSize: 18,color: Colors.white),)
+                            width: context.width*9/13,
+                            child: Text(
+                              listMovie?[index].name ?? DefaultString.NULL ,
+                              style: TextStyle(
+                                  fontSize: context.width*0.045,
+                                  color: Colors.white),)
                         )
                       ],
                     ),
