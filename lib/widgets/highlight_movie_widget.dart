@@ -127,7 +127,7 @@ class HighlightMovieWidget extends StatelessWidget {
     :
     firstMovieItem==null || movieFromSlug==null?
     Padding(
-      padding: const EdgeInsets.only(top: 30.0,left: 8,right: 8),
+      padding: const EdgeInsets.only(top: 5.0,left: 8,right: 8),
       child: SizedBox(
         width: context.width,
         child: Row(
@@ -135,8 +135,8 @@ class HighlightMovieWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: context.width*1/4,
-              height: context.height*3/4,
+              width: context.width*0.25,
+              height: context.height*0.68,
               child: Card(
                   elevation: 50,
                   clipBehavior: Clip.antiAlias,
@@ -147,8 +147,8 @@ class HighlightMovieWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Container(
-                height: context.height*3/4,
                 width: context.width/2,
+                height: context.height*0.68,
                 color: Colors.transparent,
               ),
             ),
@@ -158,7 +158,7 @@ class HighlightMovieWidget extends StatelessWidget {
     )
         :
     Padding(
-      padding: const EdgeInsets.only(top: 30.0,left: 8,right: 8),
+      padding: const EdgeInsets.only(top: 5.0,left: 8,right: 8),
       child: SizedBox(
         width: context.width,
         child: Row(
@@ -166,8 +166,8 @@ class HighlightMovieWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: context.width*1/4,
-              height: context.height*3/4,
+              width: context.width*0.25,
+              height: context.height*0.68,
               child: FadeIn(
                 duration: const Duration(seconds: 1),
                 child: Card(
@@ -198,14 +198,13 @@ class HighlightMovieWidget extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: context.height*3/4,
+              height: context.height*0.68,
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    WidgetSize.sizedBoxHeight_5,
                     GestureDetector(
                       onTap: (){
                         Get.toNamed(Routes.DETAIL_MOVIE, arguments: firstMovieItem.slug ?? DefaultString.NULL);
@@ -217,9 +216,9 @@ class HighlightMovieWidget extends StatelessWidget {
                           firstMovieItem.name?? DefaultString.NULL,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 20,
+                            fontSize: context.width*0.03,
                             fontWeight: FontWeight.bold
                           ),
                         ),
@@ -232,7 +231,7 @@ class HighlightMovieWidget extends StatelessWidget {
                         style: {
                           "body": Style(
                             color: Colors.white,      // Đổi màu chữ thành trắng
-                            fontSize: FontSize(15.0), // Đổi kích thước chữ thành 15
+                            fontSize: FontSize(context.width*0.02), // Đổi kích thước chữ thành 15
                             maxLines: 3,
                             textAlign: TextAlign.justify,
                             textOverflow: TextOverflow.ellipsis
@@ -254,13 +253,12 @@ class HighlightMovieWidget extends StatelessWidget {
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(5),
                                       color: Colors.white,
-
                                   ),
                                   child: Text(
                                     movieFromSlug.quality?? DefaultString.NULL,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Colors.black,      // Đổi màu chữ thành trắng
-                                      fontSize: 15.0,
+                                      fontSize: context.width*0.02,
                                       fontWeight: FontWeight.bold
                                     ),
                                   ),
@@ -276,9 +274,9 @@ class HighlightMovieWidget extends StatelessWidget {
                                   ),
                                   child: Text(
                                     movieFromSlug.lang?? DefaultString.NULL,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         color: Colors.white,      // Đổi màu chữ thành trắng
-                                        fontSize: 15.0,
+                                        fontSize: context.width*0.02,
                                     ),
                                   ),
                                 ),
@@ -289,9 +287,9 @@ class HighlightMovieWidget extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Text(
                                 movieFromSlug.status ==MovieString.STATUS_COMPLETED ? MovieString.SHOW_COMPLETED_STATUS : "${movieFromSlug.episode_current ?? DefaultString.NULL}/${movieFromSlug.episode_total ?? DefaultString.NULL}",
-                                style: const TextStyle(
+                                style: TextStyle(
                                     color: Colors.white,      // Đổi màu chữ thành trắng
-                                    fontSize: 15.0,
+                                    fontSize: context.width*0.02,
                                     fontWeight: FontWeight.bold
                                 ),
                               ),
@@ -313,9 +311,9 @@ class HighlightMovieWidget extends StatelessWidget {
                             ),
                             child: Text(
                               movieFromSlug.list_country?[0].name?? DefaultString.NULL,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.black,      // Đổi màu chữ thành trắng
-                                fontSize: 15.0,
+                                fontSize: context.width*0.02,
                                 fontWeight: FontWeight.bold
                               ),
                             ),
@@ -331,9 +329,9 @@ class HighlightMovieWidget extends StatelessWidget {
                             ),
                             child: Text(
                               movieFromSlug.year?? DefaultString.NULL,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,      // Đổi màu chữ thành trắng
-                                fontSize: 15.0,
+                                fontSize: context.width*0.02,
                               ),
                             ),
                           ),
@@ -344,8 +342,11 @@ class HighlightMovieWidget extends StatelessWidget {
                       width: context.width/2,
                       child: Wrap(
                         children: List.generate(movieFromSlug.list_category!.length, (index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical:  4.0,horizontal: 6),
+                          return index > 2 ?
+                          const SizedBox()
+                              :
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical:  2.0,horizontal: 6),
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
                               decoration: BoxDecoration(
@@ -354,9 +355,9 @@ class HighlightMovieWidget extends StatelessWidget {
                               ),
                               child: Text(
                                   movieFromSlug.list_category?[index].name??DefaultString.NULL,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,      // Đổi màu chữ thành trắng
-                                  fontSize: 15.0,
+                                  fontSize: context.width*0.02,
                                 ),
                               ),
                             ),
@@ -371,12 +372,12 @@ class HighlightMovieWidget extends StatelessWidget {
                         child: MaterialButton(
                           onPressed: () => controller.onPlayButtonPress(firstMovieItem.slug,controller.listEpisodesMovieFromSlug),
                           color: Colors.white,
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.play_arrow,color: Colors.black,size: 30,),
+                              Icon(Icons.play_arrow,color: Colors.black,size: context.width*0.05,),
                               SizedBox(width: 5,),
-                              Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: 20,color: Colors.black),)
+                              Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: context.width*0.03,color: Colors.black),)
                             ],
                           ),
                         ),

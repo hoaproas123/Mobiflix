@@ -54,12 +54,16 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   final ScrollController scrollController = ScrollController();
 
+  late RxBool accessScroll;
+
   late AnimationController animationController;
   late Animation<double> fadeAnimation;
+
 
   @override
   Future<void> onInit() async {
     super.onInit();
+    accessScroll=false.obs;
     // Khởi tạo animation mờ dần của Splash
     animationController = AnimationController(
       vsync: this,

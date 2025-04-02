@@ -87,29 +87,30 @@ class ListMovieWidget extends StatelessWidget {
             tag: title,
             child: Container(
               width: context.width,
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
               child: AnimatedGradientText(
                 text: title,
                 colors: List.generate(4, (index) {
                   double lightness = HSLColor.fromColor(Colors.white).lightness * (1 - (index * 0.25)); // Giảm 15% mỗi bước
                   return HSLColor.fromColor(Colors.white).withLightness(lightness.clamp(0.0, 1.0)).toColor();
                 }),
-                fontSize: 20.0,
+                fontSize: context.orientation==Orientation.portrait ? context.width*0.045 : context.width*0.04,
               ),
             ),
           ),
         ),
-        SizedBox(
-            height: 250,
+        Container(
+            height: context.orientation==Orientation.portrait ? context.height*0.3 : context.width*0.3,
+            padding: EdgeInsets.all(8),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               cacheExtent: 20,
               itemCount: listMovie?.length,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 2),
+                  padding: const EdgeInsets.only(right: 10.0),
                   child: SizedBox(
-                    width: 150,
+                    width: context.orientation==Orientation.portrait ? context.width*0.4 : context.height*0.45,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -146,7 +147,7 @@ class ListMovieWidget extends StatelessWidget {
                                 onPressed: () => controller.onPlayButtonPress(listMovie?[index].slug,controller.listContinueEpisodeModel.value[index]),
                                 icon: Icon(
                                   Icons.play_circle_outlined,
-                                  size: 90,
+                                  size: context.width*0.2,
                                   color: Colors.white.withOpacity(0.8),
                                 ),
                             )
@@ -161,7 +162,7 @@ class ListMovieWidget extends StatelessWidget {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   color: Colors.red.shade500,
-                                  borderRadius: BorderRadius.circular(3)
+                                  borderRadius: BorderRadius.circular(context.width*0.01)
                               ),
                               child: Text(
                                 url == false ?
@@ -169,8 +170,8 @@ class ListMovieWidget extends StatelessWidget {
                                     listMovie![index].episode_current!.contains(MovieString.COMPLETED_MOVIE_TITLE2) ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE
                                   :
                                 listMovie![index].status ==MovieString.STATUS_COMPLETED ? MovieString.NEW_ADD_TITLE : MovieString.NEW_EPISODE_TITLE,
-                                style: const TextStyle(
-                                    fontSize: 12,
+                                style: TextStyle(
+                                    fontSize: context.width*0.035,
                                     color: Colors.white
                                 ),
                               ),

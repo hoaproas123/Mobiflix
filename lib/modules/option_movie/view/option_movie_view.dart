@@ -4,10 +4,9 @@ import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
-import 'package:mobi_phim/data/country_data.dart';
-import 'package:mobi_phim/data/option_view_data.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/option_movie/controller/option_movie_controller.dart';
+import 'package:mobi_phim/modules/option_movie/widgets/optionsBar_widget.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
@@ -60,170 +59,74 @@ class OptionMovieView extends GetView<OptionMovieController> {
             ),
             child: ListView(
                 children: [
-                  WidgetSize.sizedBoxHeight_15,
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal:  8.0),
-                    child: SizedBox(
-                      height: 30,
-                      child: Row(
-                        children: [
-                          Hero(
-                            tag: TagString.CLOSE,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 5.0),
-                              child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    padding: const EdgeInsets.all(0),
-                                    side: const BorderSide(color: Colors.white, width: 1),
-                                    minimumSize: const Size(30, 30),
-                                  ),
-                                  onPressed: () => Get.back(),
-                                  child: const Icon(Icons.close,color: Colors.white,size: 15,)),
-                            ),
-                          ),
-                          SizedBox(
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 5.0),
-                              child: Hero(
-                                tag: controller.tag,
-                                child: TextButton(
-                                  onPressed: (){},
-                                  style:  ButtonStyle(
-                                      side: const WidgetStatePropertyAll(BorderSide(color: Colors.white, width: 1)),
-                                      // minimumSize: const WidgetStatePropertyAll(Size(40, 15)),
-                                      backgroundColor: WidgetStatePropertyAll(Colors.grey.withOpacity(0.4))
-                                  ),
-                                  child: Text(
-                                    controller.title,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          controller.tag==DefaultString.YEAR ? const SizedBox() :
-                          SizedBox(
-                              child: Obx(() {
-                                return Hero(
-                                  tag: listOption[4].optionName.toString(),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(7),
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent, // Nền trong suốt
-                                      borderRadius: BorderRadius.circular(15), // Bo tròn góc
-                                      border: Border.all(
-                                        color: Colors.white, // Viền màu trắng
-                                        width: 1, // Độ dày của viền
-                                      ),
-                                    ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: PopupMenuButton<int>(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 100, // Chiều rộng tối đa
-                                          maxHeight: 300,
-                                        ),
-                                        offset: const Offset(-30,0),
-                                        position: PopupMenuPosition.over,
-                                        color: Colors.transparent.withOpacity(0.8),
-
-                                        onSelected: (int result) => controller.onSelectYear(result),
-                                        itemBuilder: (context) {
-                                          return List.generate(controller.listYear.length, (index) {
-                                            return PopupMenuItem<int>(
-                                              value: index,
-                                              child: Text(controller.listYear[index].toString(),style: const TextStyle(color: Colors.white),),
-                                            );
-                                          });
-                                        },
-                                        child: Text(
-                                          controller.selectYear.value,
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },)
-                          ),
-                          WidgetSize.sizedBoxWidth_5,
-                          controller.tag ==DefaultString.COUNTRY ? const SizedBox() :
-                          SizedBox(
-                              child: Obx(() {
-                                return Hero(
-                                  tag: listOption[5].optionName.toString(),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(7),
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent, // Nền trong suốt
-                                      borderRadius: BorderRadius.circular(15), // Bo tròn góc
-                                      border: Border.all(
-                                        color: Colors.white, // Viền màu trắng
-                                        width: 1, // Độ dày của viền
-                                      ),
-                                    ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: PopupMenuButton<int>(
-                                        constraints: const BoxConstraints(
-                                          maxWidth: 150, // Chiều rộng tối đa
-                                          maxHeight: 300,
-                                        ),
-                                        offset: const Offset(-50,0),
-                                        position: PopupMenuPosition.over,
-                                        color: Colors.transparent.withOpacity(0.8),
-                                        onSelected: (int result) => controller.onSelectCountry(result),
-                                        itemBuilder: (context) {
-                                          return List.generate(countryList.length, (index) {
-                                            return PopupMenuItem<int>(
-                                              value: index,
-                                              child: Text(countryList[index].name!,style: const TextStyle(color: Colors.white),),
-                                            );
-                                          });
-                                        },
-                                        child: Text(
-                                          controller.selectCountry.value.name!,
-                                          style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },)
-                          ),
-                        ],
-                      ),
+                  context.orientation==Orientation.portrait ?
+                  Column(
+                    children: [
+                      WidgetSize.sizedBoxHeight_15,
+                      OptionsBarWidget(controller: controller),
+                      HighlightMovieWidget(controller: controller,url: false,),
+                      WidgetSize.sizedBoxHeight_15,
+                      controller.tag ==DefaultString.YEAR || controller.selectYear.value!=DefaultString.YEAR || controller.selectCountry.value.name!=DefaultString.COUNTRY ?
+                      const SizedBox()
+                          :
+                      controller.tag ==DefaultString.COUNTRY ?
+                      ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_COUNTRY(controller.title),controller: controller,url: false,isHome:false,listType: ListType.NEW_UPDATE_MOVIE,)
+                          :
+                      ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_OPTION(controller.tag),controller: controller,url: false,isHome: false,listType: ListType.NEW_UPDATE_MOVIE,),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.listMovieModel.length,
+                        itemBuilder: (context, index) {
+                          MoviesModel moviesModel=controller.listMovieModel[index];
+                          int? len=moviesModel.pagination?.totalPages;
+                          return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.title)??DefaultString.NULL,index: index,controller: controller,isHome: false,);
+                        },),
+                    ],
+                  )
+                      :
+                  SizedBox(
+                    height: context.height*0.8,
+                    child: PageView(
+                      scrollDirection: Axis.vertical,
+                      onPageChanged: (value) {
+                        if(value==1) {
+                          controller.accessScroll.value= !controller.accessScroll.value;
+                        }
+                      },
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            WidgetSize.sizedBoxHeight_5,
+                            OptionsBarWidget(controller: controller),
+                            HighlightMovieWidget(controller: controller,url: false,),
+                          ],
+                        ),
+                        if((controller.tag ==DefaultString.COUNTRY && (controller.tag !=DefaultString.YEAR || controller.selectYear.value==DefaultString.YEAR || controller.selectCountry.value.name==DefaultString.COUNTRY))==true)
+                          ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_COUNTRY(controller.title),controller: controller,url: false,isHome:false,listType: ListType.NEW_UPDATE_MOVIE,)
+                        else if(controller.tag !=DefaultString.COUNTRY && controller.tag !=DefaultString.YEAR && controller.selectYear.value==DefaultString.YEAR && controller.selectCountry.value.name==DefaultString.COUNTRY)
+                          ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_OPTION(controller.tag),controller: controller,url: false,isHome: false,listType: ListType.NEW_UPDATE_MOVIE,),
+                        SizedBox(
+                          height: context.height*0.8,
+                          child: PageView.builder(
+                            onPageChanged: (value) {
+                              if(value==0) {
+                                controller.accessScroll.value= !controller.accessScroll.value;
+                              }
+                            },
+                            physics: controller.accessScroll.value ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount: controller.listMovieModel.length,
+                            itemBuilder: (context, index) {
+                              MoviesModel moviesModel=controller.listMovieModel[index];
+                              int? len=moviesModel.pagination?.totalPages;
+                              return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.title)??DefaultString.NULL,index: index,controller: controller,isHome: false,);
+                            },),
+                        ),
+                      ],
                     ),
                   ),
-                  HighlightMovieWidget(controller: controller,url: false,),
-                  WidgetSize.sizedBoxHeight_15,
-                  controller.tag ==DefaultString.YEAR || controller.selectYear.value!=DefaultString.YEAR || controller.selectCountry.value.name!=DefaultString.COUNTRY ?
-                  const SizedBox()
-                      :
-                  controller.tag ==DefaultString.COUNTRY ?
-                  ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_COUNTRY(controller.title),controller: controller,url: false,isHome:false,listType: ListType.NEW_UPDATE_MOVIE,)
-                      :
-                  ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE_OPTION(controller.tag),controller: controller,url: false,isHome: false,listType: ListType.NEW_UPDATE_MOVIE,),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: controller.listMovieModel.length,
-                    itemBuilder: (context, index) {
-                      MoviesModel moviesModel=controller.listMovieModel[index];
-                      int? len=moviesModel.pagination?.totalPages;
-                      return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.title)??DefaultString.NULL,index: index,controller: controller,isHome: false,);
-                    },),
                 ]
             ),
         );

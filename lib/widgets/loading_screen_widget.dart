@@ -62,8 +62,8 @@ class CardItemLoading extends StatelessWidget {
       animation: controller.borderAnimation,
       builder: (context, child) {
         return Container(
-          width: 150,
-          height: 250,
+          width: context.orientation==Orientation.portrait ? context.width*0.4 : context.height*0.5,
+          height: context.orientation==Orientation.portrait ? context.height*0.35 : context.width*0.35,
           decoration: BoxDecoration(
             border: Border.all(
               color: Colors.white.withOpacity(controller.borderAnimation.value), // Viền nhấp nháy

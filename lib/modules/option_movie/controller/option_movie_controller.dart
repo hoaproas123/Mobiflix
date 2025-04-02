@@ -44,10 +44,12 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   Rx<ItemMovieModel?> movieFromSlug = Rx<ItemMovieModel?>(null);
   RxList<EpisodesMovieModel> listEpisodesMovieFromSlug = <EpisodesMovieModel>[].obs;
 
+  late RxBool accessScroll;
 
   @override
   void onInit() async {
     super.onInit();
+    accessScroll=false.obs;
     listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
     onLoading();
   }
@@ -153,8 +155,9 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     update();
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
-        listMovieModel.add( MoviesModel.fromJson(response!.data!,title));
-
+        if((MoviesModel.fromJson(response!.data!,title).pagination?.totalPages ?? 0) > 0){
+          listMovieModel.add( MoviesModel.fromJson(response!.data!,title));
+        }
       }
       else {
         Alert.showError(
