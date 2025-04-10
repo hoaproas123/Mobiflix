@@ -212,6 +212,7 @@ class HighlightMovieWidget extends StatelessWidget {
                       child: Container(
                         alignment: Alignment.center,
                         padding: const EdgeInsets.only(left: 6),
+                        width: context.width/2,
                         child: Text(
                           firstMovieItem.name?? DefaultString.NULL,
                           overflow: TextOverflow.ellipsis,
@@ -266,6 +267,7 @@ class HighlightMovieWidget extends StatelessWidget {
                                 WidgetSize.sizedBoxWidth_10,
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  constraints: BoxConstraints(maxWidth: context.width*0.3),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                       color: Colors.grey.withOpacity(0.1),
@@ -274,6 +276,8 @@ class HighlightMovieWidget extends StatelessWidget {
                                   ),
                                   child: Text(
                                     movieFromSlug.lang?? DefaultString.NULL,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                     style: TextStyle(
                                         color: Colors.white,      // Đổi màu chữ thành trắng
                                         fontSize: context.width*0.02,
