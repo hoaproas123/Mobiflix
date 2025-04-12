@@ -5,6 +5,8 @@ import 'package:mobi_phim/modules/genre_movie/bindings/genre_movie_binding.dart'
 import 'package:mobi_phim/modules/genre_movie/view/genre_movie_view.dart';
 import 'package:mobi_phim/modules/home/bindings/home_binding.dart';
 import 'package:mobi_phim/modules/home/view/home_view.dart';
+import 'package:mobi_phim/modules/login/bindings/login_binding.dart';
+import 'package:mobi_phim/modules/login/view/login_view.dart';
 import 'package:mobi_phim/modules/option_movie/bindings/option_movie_binding.dart';
 import 'package:mobi_phim/modules/option_movie/view/option_movie_view.dart';
 import 'package:mobi_phim/modules/play_movie/bindings/play_movie_binding.dart';
@@ -19,9 +21,16 @@ import 'package:mobi_phim/modules/splash/view/splash_screen.dart';
 part 'app_routes.dart';
 
 class AppPages {
-  static const INITIAL = _Paths.HOME;
+  static const INITIAL = _Paths.SPLASH;
 
   static final routes = [
+    GetPage(
+      name: _Paths.LOGIN,
+      page: () => const LoginView(),
+      binding: LoginBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 800)
+    ),
     GetPage(
       name: _Paths.SPLASH,
       page: () => const SplashScreen(),

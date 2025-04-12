@@ -50,7 +50,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   RxList<EpisodesMovieModel> listEpisodesMovieFromSlug = <EpisodesMovieModel>[].obs;
 
 
-  RxBool isSplash=true.obs;
+  RxBool isLoading=true.obs;
 
   final ScrollController scrollController = ScrollController();
 
@@ -74,7 +74,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
     onLoading();
     Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() {
-      isSplash.value=false;
+      isLoading.value=false;
     },);
   }
   onLoading()  {

@@ -7,6 +7,7 @@ import 'package:mobi_phim/modules/home/controller/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/home/widgets/optionsBar_widget.dart';
+import 'package:mobi_phim/modules/login/controller/login_controller.dart';
 import 'package:mobi_phim/modules/splash/view/splash_screen.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
@@ -22,6 +23,7 @@ class HomeView extends GetView<HomeController> {
         Obx(() {
           return Scaffold(
             appBar: AppBar(
+              automaticallyImplyLeading: false,
               backgroundColor: controller.backgroundColor.value,
               elevation: 0,
               title: GestureDetector(
@@ -42,7 +44,18 @@ class HomeView extends GetView<HomeController> {
                     color: Colors.white,
                   ),
                 ),
-                WidgetSize.sizedBoxWidth_10
+                WidgetSize.sizedBoxWidth_10,
+                IconButton(
+                  onPressed: () {
+                    LoginController _controller=Get.find();
+                    _controller.logout();
+                  },
+                  icon: const Icon(
+                    Icons.logout_rounded,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
             body: Center(
@@ -137,8 +150,10 @@ class HomeView extends GetView<HomeController> {
           );
         },),
         Obx(() {
-          if (controller.isSplash.value==true) {
-            return FadeTransition(opacity: controller.fadeAnimation, child: const SplashScreen());
+          if (controller.isLoading.value==true) {
+            return FadeTransition(
+                opacity: controller.fadeAnimation,
+                child: Center(child: const CircularProgressIndicator(color: Colors.white,)));
           } else {
             return const SizedBox();
           }

@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
+import 'package:mobi_phim/constant/app_interger.dart';
+import 'package:mobi_phim/routes/app_pages.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -40,6 +42,9 @@ class _SplashScreenState extends State<SplashScreen>
     _animationMove = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(parent: _controllerMove, curve: Curves.easeIn),
     );
+    Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() {
+      Get.offAndToNamed(Routes.LOGIN);
+    },);
   }
 
   @override
