@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
@@ -16,10 +17,16 @@ import 'package:mobi_phim/models/country_item.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/option_view_model.dart';
+import 'package:mobi_phim/models/user_model.dart';
 import 'package:mobi_phim/modules/home/model/home_model.dart';
 import 'package:mobi_phim/modules/home/repository/home_repository.dart';
+import 'package:mobi_phim/modules/home/view/home_page.dart';
+import 'package:mobi_phim/modules/home/view/user_page.dart';
+import 'package:mobi_phim/modules/home/widgets/home_appbar_widget.dart';
+import 'package:mobi_phim/modules/login/controller/login_controller.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
+import 'package:mobi_phim/widgets/widgets.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'package:mobi_phim/models/movies_model.dart';
@@ -29,6 +36,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   final HomeRepository homeRepository;
   HomeModel? homeModel;
   HomeController({required this.homeRepository});
+
+  UserModel? user=Get.arguments;
   List<MoviesModel> listMovieModel =[];
   RxList<ItemMovieModel> listNewUpdateMovie = <ItemMovieModel>[].obs;
   Rx<ItemMovieModel?> firstMovieItem = Rx<ItemMovieModel?>(null);
@@ -59,10 +68,65 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   late AnimationController animationController;
   late Animation<double> fadeAnimation;
 
-
+  RxInt currentIndex = 0.obs;
+  late List listPages;
+  late List listAppbars;
+  late Widget currentPage;
+  late Widget currentAppbar;
   @override
   Future<void> onInit() async {
     super.onInit();
+    listPages = [];
+    listPages
+      ..add(const HomePage())
+      ..add(const UserPage());
+    currentPage = const HomePage();
+    listAppbars = [];
+    listAppbars
+      ..add(HomeAppbarWidget(
+        actions: [
+          IconButton(
+          onPressed: () => onSearchPress(),
+          icon: const Icon(
+            Icons.search,
+            size: 30,
+            color: Colors.white,
+            ),
+          ),
+          WidgetSize.sizedBoxWidth_10,
+        ],
+      )
+      )
+      ..add(HomeAppbarWidget(
+        title: 'Mobiflix của tôi',
+        actions: [
+          IconButton(
+            onPressed: () {
+              LoginController _controller=Get.find();
+              _controller.logout();
+            },
+            icon: const Icon(
+              Icons.logout_rounded,
+              size: 30,
+              color: Colors.white,
+            ),
+          ),
+          WidgetSize.sizedBoxWidth_10,
+        ],
+      ));
+    currentAppbar = HomeAppbarWidget(
+      actions: [
+        IconButton(
+          onPressed: () => onSearchPress(),
+          icon: const Icon(
+            Icons.search,
+            size: 30,
+            color: Colors.white,
+          ),
+        ),
+        WidgetSize.sizedBoxWidth_10,
+      ],
+    );
     accessScroll=false.obs;
     // Khởi tạo animation mờ dần của Splash
     animationController = AnimationController(
@@ -331,6 +395,12 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
       duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_SCROLL_MILLISECONDS),
       curve: Curves.easeInOut,
     );
+  }
+
+  void changePage(int selectedIndex) {
+      currentIndex.value = selectedIndex;
+      currentPage = listPages[selectedIndex];
+      currentAppbar=listAppbars[selectedIndex];
   }
   @override
   void dispose() {

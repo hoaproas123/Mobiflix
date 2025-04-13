@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mobiflix</string>
+    <string name="facebook_app_id">1334358177654670</string>
+    <string name="fb_login_protocol_scheme">fb1334358177654670</string>
+    <string name="facebook_client_token">101b9c418f7c3a896056b0ebaa0aa791</string>
+</resources>
