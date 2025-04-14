@@ -81,14 +81,13 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                                   child: listMovie?[index].poster_url ==null ?
                                   const SizedBox()
                                       :
-                                  Ink.image(
-                                    image: NetworkImage(
-                                      title == MovieString.NEW_UPDATE_TITLE ? (listMovie![index].poster_url!)
-                                          :
-                                      DomainProvider.imgUrl+(listMovie![index].poster_url! ),
-                                    ),
+                                  Image.network(
+                                    title == MovieString.NEW_UPDATE_TITLE ? (listMovie![index].poster_url!)
+                                        :
+                                    DomainProvider.imgUrl+(listMovie![index].poster_url! ),
                                     fit: BoxFit.fill,
-                                  )
+                                    errorBuilder: (context, error, stackTrace) => Image.asset('assets/icon/no_image.png',fit: BoxFit.fill,color: Colors.white,),
+                                  ),
                               ),
                               listMovie==null || changePage==true?
                               const SizedBox()

@@ -73,6 +73,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   late List listAppbars;
   late Widget currentPage;
   late Widget currentAppbar;
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Future<void> onInit() async {
     super.onInit();

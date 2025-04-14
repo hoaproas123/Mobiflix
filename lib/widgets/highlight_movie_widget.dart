@@ -64,10 +64,7 @@ class HighlightMovieWidget extends StatelessWidget {
                       cacheManager: MyCacheManager.instance,
                       fit: BoxFit.fill,
                       placeholder: (context, url) =>CardHighLightLoading(),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey,
-                        child: const Icon(Icons.error, color: Colors.red),
-                      ),
+                      errorWidget: (context, url, error) => Image.asset('assets/icon/no_image.png',fit: BoxFit.fill,color: Colors.white,),
                       imageBuilder: (context, imageProvider) => Ink.image(
                         image: imageProvider,
                         fit: BoxFit.fill,
@@ -179,10 +176,7 @@ class HighlightMovieWidget extends StatelessWidget {
                       cacheManager: MyCacheManager.instance,
                       fit: BoxFit.fill,
                       placeholder: (context, url) =>CardHighLightLoading(),
-                      errorWidget: (context, url, error) => Container(
-                        color: Colors.grey,
-                        child: const Icon(Icons.error, color: Colors.red),
-                      ),
+                      errorWidget: (context, url, error) => Image.asset('assets/icon/no_image.png',fit: BoxFit.fill,color: Colors.white,),
                       imageBuilder: (context, imageProvider) => Ink.image(
                         image: imageProvider,
                         fit: BoxFit.fill,

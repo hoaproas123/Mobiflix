@@ -127,7 +127,9 @@ class ListMovieWidget extends StatelessWidget {
                               cacheManager: MyCacheManager.instance,
                               fit: BoxFit.fill,
                               placeholder: (context, url) => CardItemLoading(),
-                              errorWidget: (context, url, error) => CardItemLoading(),
+                              errorWidget: (context, url, error) {
+                                return Image.asset('assets/icon/no_image.png',fit: BoxFit.fill,color: Colors.white,);
+                              },
                               imageBuilder: (context, imageProvider) => Ink.image(
                                 image: imageProvider,
                                 fit: BoxFit.fill,

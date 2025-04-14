@@ -15,6 +15,14 @@ class HomeAppbarWidget extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Obx(() {
       return AppBar(
+        leading: context.orientation==Orientation.portrait ?
+        null
+            :
+        IconButton(
+          icon: Icon(Icons.menu,color: Colors.white,),
+          onPressed: () {
+            controller.scaffoldKey.currentState!.openDrawer();
+          },),
         automaticallyImplyLeading: false,
         backgroundColor: title==AppString.APP_NAME ? controller.backgroundColor.value : Colors.black,
         elevation: 0,

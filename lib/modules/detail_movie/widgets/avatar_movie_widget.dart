@@ -27,6 +27,7 @@ class BuildAvatarMovie extends StatelessWidget {
       )
           :
       Image.network(
+        errorBuilder: (context, error, stackTrace) => Image.asset('assets/icon/no_image.png',fit: BoxFit.fill,color: Colors.white,),
         detailMovie?.thumb_url?? DefaultString.NULL,
         fit: BoxFit.fill,
       ),
