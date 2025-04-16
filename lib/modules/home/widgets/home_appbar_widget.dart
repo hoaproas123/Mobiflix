@@ -27,7 +27,7 @@ class HomeAppbarWidget extends GetView<HomeController> {
         backgroundColor: title==AppString.APP_NAME ? controller.backgroundColor.value : Colors.black,
         elevation: 0,
         title: GestureDetector(
-          onTap: controller.scrollToTop,
+          onTap: title==AppString.APP_NAME ? controller.scrollToTop : null,
           child: Text(
             title,
             style: const TextStyle(

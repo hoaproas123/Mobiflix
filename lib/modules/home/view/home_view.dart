@@ -57,7 +57,7 @@ class HomeView extends GetView<HomeController> {
               currentIndex: controller.currentIndex.value,
               onTap: (value) => controller.changePage(value),
               backgroundColor: Colors.black,
-              iconSize: 30,
+              iconSize: 25,
               selectedItemColor: Colors.white,
               unselectedItemColor: Colors.grey.shade800,
               items: [
