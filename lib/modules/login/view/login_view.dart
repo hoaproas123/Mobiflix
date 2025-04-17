@@ -173,7 +173,7 @@ class LoginView extends GetView<LoginController> {
                       width: 50,
                       height: 50,
                       child: IconButton(
-                          onPressed: (){},
+                          onPressed: () => controller.onloginWithFigure(context),
                           icon: Image.asset('assets/icon/fingerprint.png')
                       ),
                     )
@@ -194,7 +194,7 @@ class LoginView extends GetView<LoginController> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: (){},
+                      onTap: () => controller.showRegisterDialog(context),
                       child: Text(
                         'Đăng ký ngay',
                         style: TextStyle(
