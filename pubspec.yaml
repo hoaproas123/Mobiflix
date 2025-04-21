@@ -49,6 +49,7 @@ dependencies:
   flutter_facebook_auth: ^6.0.2
   google_sign_in: ^6.2.1
   connectivity_plus: ^5.0.2
+  mongo_dart: ^0.10.0
 
 
 dev_dependencies:

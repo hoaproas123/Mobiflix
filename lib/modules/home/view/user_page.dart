@@ -39,12 +39,27 @@ class UserPage extends GetView<HomeController> {
                         fit: BoxFit.fill,
                       ),
                     ),
-                    Text(
-                      controller.user?.name?? 'Người dùng không xác định',
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: Colors.white
-                      ),
+                    Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8),
+                          child: Text(
+                            controller.user?.name?? 'Người dùng không xác định',
+                            style: TextStyle(
+                              fontSize: 25,
+                              color: Colors.white
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: -10,
+                          right: -10,
+                          child: IconButton(
+                              onPressed: (){},
+                              icon: Icon(Icons.edit,color: Colors.white,size: 15,)
+                          ),
+                        ),
+                      ],
                     ),
                     WidgetSize.sizedBoxHeight_15,
                     ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
@@ -80,13 +95,29 @@ class UserPage extends GetView<HomeController> {
                               fit: BoxFit.fill,
                             ),
                           ),
+
                           WidgetSize.sizedBoxWidth_15,
-                          Text(
-                            controller.user?.name?? 'Người dùng không xác định',
-                            style: TextStyle(
-                                fontSize: 25,
-                                color: Colors.white
-                            ),
+                          Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8),
+                                child: Text(
+                                  controller.user?.name?? 'Người dùng không xác định',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      color: Colors.white
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: -10,
+                                right: -10,
+                                child: IconButton(
+                                    onPressed: (){},
+                                    icon: Icon(Icons.edit,color: Colors.white,size: 15,)
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
