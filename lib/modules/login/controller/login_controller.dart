@@ -13,6 +13,8 @@ import 'package:mobi_phim/models/user_account_model.dart';
 import 'package:mobi_phim/models/user_model.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/db_mongo_service.dart';
+import 'package:mongo_dart/mongo_dart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoginController extends GetxController {
@@ -23,9 +25,10 @@ class LoginController extends GetxController {
   RxBool isPasswordHidden=true.obs;
   bool isAccountExist=false;
   RxBool isLoadingAccount=false.obs;
+  RxBool isLoadingLogin=false.obs;
   Timer? _debounce;
 
-
+  TextEditingController usernameController=TextEditingController();
   final username_FieldKey = GlobalKey<FormFieldState>();
   final password_FieldKey = GlobalKey<FormFieldState>();
   final againPassword_FieldKey = GlobalKey<FormFieldState>();
@@ -37,9 +40,19 @@ class LoginController extends GetxController {
     ],
   );
   bool canLogin=false;
+
+  UserModel user=Get.arguments;
   @override
   Future<void> onInit() async {
     super.onInit();
+    usernameController=TextEditingController(text: user.username);
+    username=user.username??"";
+  }
+
+  Future<void> saveToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('id', userData!.id!);
+    prefs.setString('username', userData!.username!);
   }
   Future<void> checkInternetConnection() async {
     canLogin=false;
@@ -68,7 +81,8 @@ class LoginController extends GetxController {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () async {
       if (username!='') {
-        loginSuccess.value=await DbMongoService().getUser(username, password);
+        UserAccountModel? user= await DbMongoService().getUser(username, password);
+        loginSuccess.value= user == null ? false : true;
       }
     });
   }
@@ -77,8 +91,8 @@ class LoginController extends GetxController {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () async {
       if (password!='') {
-        loginSuccess.value=await DbMongoService().getUser(username, password);
-
+        UserAccountModel? user= await DbMongoService().getUser(username, password);
+        loginSuccess.value= user == null ? false : true;
       }
     });
 
@@ -86,13 +100,17 @@ class LoginController extends GetxController {
   onLoginButtonPress() async {
     await checkInternetConnection();
     if(canLogin==true){
-      userData = UserModel(username: username,name: username);
+      isLoadingLogin.value=true;
+      ObjectId id = await DbMongoService().getIdProfile(username);
+      userData = UserModel(id: id.toJson(),username: username,name: username);
+      saveToken();
       Get.offAndToNamed(Routes.HOME,arguments: userData);
       Get.snackbar(
           'Đăng Nhập thành công',
           'Xin chào ${userData?.name}',
           colorText: Colors.white
       );
+      print(userData?.id);
     }
   }
   Future<void> onloginWithFacebook() async {
@@ -102,13 +120,19 @@ class LoginController extends GetxController {
       if (result.status == LoginStatus.success) {
         final _userData = await FacebookAuth.instance.getUserData();
         userData = UserModel.fromJson(_userData);
+        saveToken();
         Get.offAndToNamed(Routes.HOME,arguments: userData);
         Get.snackbar(
             'Đăng Nhập thành công',
             'Xin chào ${userData?.name}',
             colorText: Colors.white
         );
-
+        Future.delayed(Duration(seconds: 3),() async {
+          bool isExistProfile=await DbMongoService().isExistProfile(userData!.id!);
+          if(isExistProfile==false){
+            DbMongoService().addProfile(userData!);
+          }
+        },);
       } else {
         print("Facebook login failed: ${result.status}");
       }
@@ -131,12 +155,19 @@ class LoginController extends GetxController {
             name: account.displayName,
             urlAvatar: account.photoUrl
         );
+        saveToken();
         Get.offAndToNamed(Routes.HOME,arguments: userData);
         Get.snackbar(
             'Đăng Nhập thành công',
             'Xin chào ${userData?.name}',
           colorText: Colors.white
         );
+        Future.delayed(Duration(seconds: 3),() async {
+          bool isExistProfile=await DbMongoService().isExistProfile(userData!.id!);
+          if(isExistProfile==false){
+            DbMongoService().addProfile(userData!);
+          }
+        },);
       } catch (error) {
         print('Lỗi đăng nhập Google: $error');
       }
@@ -225,7 +256,7 @@ class LoginController extends GetxController {
                         _debounce = Timer(const Duration(milliseconds: 1000), () async {
                           if (value!='') {
                             isLoadingAccount.value=true;
-                            isAccountExist=await DbMongoService().isExistUser(value);
+                            isAccountExist=await DbMongoService().isExistUser(value)== null ? false : true;
                             isLoadingAccount.value=false;
                           }
                         });

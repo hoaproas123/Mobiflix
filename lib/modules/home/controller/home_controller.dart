@@ -15,6 +15,7 @@ import 'package:mobi_phim/data/genre_data.dart';
 import 'package:mobi_phim/data/option_view_data.dart';
 import 'package:mobi_phim/models/country_item.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
+import 'package:mobi_phim/models/infor_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/option_view_model.dart';
 import 'package:mobi_phim/models/user_model.dart';
@@ -25,6 +26,7 @@ import 'package:mobi_phim/modules/home/view/user_page.dart';
 import 'package:mobi_phim/modules/home/widgets/home_appbar_widget.dart';
 import 'package:mobi_phim/modules/login/controller/login_controller.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
+import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -48,6 +50,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   RxList<ItemMovieModel> listContinueMovieModel =<ItemMovieModel>[].obs;
   RxList<List<EpisodesMovieModel>> listContinueEpisodeModel =<List<EpisodesMovieModel>>[].obs;
+
+  RxList<String> listFavoriteSlug =<String>[].obs;
 
   var selectYear=DefaultString.YEAR.obs;
   var selectCountry=DefaultString.COUNTRY.obs;
@@ -168,7 +172,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     update();
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
-          // print(response!.items!);
         if(response?.items !=null){
           response?.items.forEach((item){
             listNewUpdateMovie.add(ItemMovieModel.fromJson(item));
@@ -303,6 +306,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   }
   Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
+    InforMovie newMovie=InforMovie(profile_id: user?.id,slug: slug,episode: episodeNumber,serverNumber: serverNumber );
+    DbMongoService().addContinueMovie(newMovie);
     if(prefs.containsKey(slug)){
       if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
         await prefs.remove(slug);
@@ -324,7 +329,13 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
       getContinueMovieFromSlug(listSlugContinueMovie[i]);
     }
   }
-
+  Future<void> getListFavoriteMovie() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> listSlugContinueMovie=prefs.getKeys().toList().reversed.toList();
+    for(int i=0;i<listSlugContinueMovie.length;i++){
+      getContinueMovieFromSlug(listSlugContinueMovie[i]);
+    }
+  }
   List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {
     int currentYear = DateTime.now().year;
     return List.generate(range + 1, (index) => currentYear - index);

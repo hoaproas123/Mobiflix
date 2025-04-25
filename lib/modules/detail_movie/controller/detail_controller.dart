@@ -10,10 +10,14 @@ import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/core/base_response.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
+import 'package:mobi_phim/models/infor_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
+import 'package:mobi_phim/models/movies_model.dart';
+import 'package:mobi_phim/models/user_model.dart';
 import 'package:mobi_phim/modules/detail_movie/model/detail_model.dart';
 import 'package:mobi_phim/modules/detail_movie/repository/detail_repository.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
+import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,10 +50,14 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
   RxBool isFullscreen=false.obs;
 
   RxBool isMoviescreen=false.obs;
+
+  late UserModel user;
   @override
   void onInit() async {
     super.onInit();
+    await getTokenLogin();
     tabController = TabController(length: 2, vsync: this);
+    isFavorite.value= await DbMongoService().isFavoriteMovie(InforMovie(profile_id: user.id,slug: slug));
     await getMovieFromSlug(slug);
     await _updateTextColor(movieFromSlug!.poster_url!);
     if(movieFromSlug!.trailer_url != '') {
@@ -59,7 +67,10 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
       (listEpisodesMovieFromSlug[0].server_data?.length??AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW) <=AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW ? heightEpisodes : heightEpisodes=((listEpisodesMovieFromSlug[0].server_data?.length??AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW)/AppNumber.NUMBER_OF_CHIP_EPOSIDES_PER_ROW).ceil()*heightEpisodes ;
     }
   }
-
+  Future<void> getTokenLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    user=UserModel(id: prefs.getString('id')); // Mặc định là tập 1 nếu chưa lưu
+  }
   ///***************************
   Future<void> getMovieFromSlug(String slug) async {
     listEpisodesMovieFromSlug=[];
@@ -138,6 +149,8 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
   }
   Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
+    InforMovie newMovie=InforMovie(profile_id: user?.id,slug: slug,episode: episodeNumber,serverNumber: serverNumber );
+    DbMongoService().addContinueMovie(newMovie);
     if(prefs.containsKey(slug)){
       if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
         await prefs.remove(slug);
@@ -166,6 +179,13 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
     isMoviescreen.value = await Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug, listEpisodesMovieFromSlug]);
   }
   onFavoriteButtonPress(){
+    InforMovie newMovie=InforMovie(profile_id: user.id,slug: slug);
+    if(isFavorite.value==false){
+      DbMongoService().addFavoriteMovie(newMovie);
+    }
+    else{
+      DbMongoService().removeFavoriteMovie(newMovie);
+    }
     isFavorite.value= !isFavorite.value;
   }
 

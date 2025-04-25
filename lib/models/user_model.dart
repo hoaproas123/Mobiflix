@@ -1,4 +1,6 @@
 
+import 'package:mongo_dart/mongo_dart.dart';
+
 class UserModel  {
   String? id;
   String? username;
@@ -20,6 +22,13 @@ class UserModel  {
         name: json['name'],
         urlAvatar: json['picture']['data']['url'],
     );
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      "_id": id,
+      "name": name ,
+      "urlImg": urlAvatar,
+    };
   }
 
 }

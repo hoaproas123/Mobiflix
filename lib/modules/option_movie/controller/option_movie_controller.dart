@@ -13,11 +13,14 @@ import 'package:mobi_phim/data/country_data.dart';
 import 'package:mobi_phim/data/genre_data.dart';
 import 'package:mobi_phim/models/country_item.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
+import 'package:mobi_phim/models/infor_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/movies_model.dart';
+import 'package:mobi_phim/models/user_model.dart';
 import 'package:mobi_phim/modules/option_movie/model/option_movie_model.dart';
 import 'package:mobi_phim/modules/option_movie/repository/option_movie_repository.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
+import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,14 +49,19 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
 
   late RxBool accessScroll;
 
+  late UserModel user;
   @override
   void onInit() async {
     super.onInit();
+    await getTokenLogin();
     accessScroll=false.obs;
     listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
     onLoading();
   }
-
+  Future<void> getTokenLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    user=UserModel(id: prefs.getString('id')); // Mặc định là tập 1 nếu chưa lưu
+  }
   onLoading()  {
     firstMovieItem.value=null;
     movieFromSlug.value=null;
@@ -131,6 +139,8 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
   }
   Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
+    InforMovie newMovie=InforMovie(profile_id: user?.id,slug: slug,episode: episodeNumber,serverNumber: serverNumber );
+    DbMongoService().addContinueMovie(newMovie);
     if(prefs.containsKey(slug)){
       if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
         await prefs.remove(slug);

@@ -5,7 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
+import 'package:mobi_phim/models/infor_movie.dart';
+import 'package:mobi_phim/models/user_model.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
+import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/widgets/custom_Controls_Video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -20,6 +23,8 @@ class PlayMovieController extends GetxController {
 
   late BetterPlayerController betterPlayerController;
   bool canNext=true;
+
+  late UserModel user;
   @override
   void onInit() async {
     super.onInit();
@@ -29,10 +34,15 @@ class PlayMovieController extends GetxController {
     ]);
     WakelockPlus.enable();
     _initializePlayer();
+    await getTokenLogin();
     if(currentEpisode==listEpisodes![currentServer].server_data!.length-1) {
       update();
       canNext=false;
     }
+  }
+  Future<void> getTokenLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    user=UserModel(id: prefs.getString('id'));
   }
   void _initializePlayer()  {
     betterPlayerController = BetterPlayerController(
@@ -78,12 +88,13 @@ class PlayMovieController extends GetxController {
   }
   Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
     final prefs = await SharedPreferences.getInstance();
+    InforMovie newMovie=InforMovie(profile_id: user?.id,slug: slug,episode: episodeNumber,serverNumber: serverNumber );
+    DbMongoService().addContinueMovie(newMovie);
     if(prefs.containsKey(slug)){
       if(episodeNumber==listEpisodes[currentServer].server_data!.length-1 ) {
         await prefs.remove(slug);
       }
       else{
-        print('vào nè');
         await prefs.remove(slug).then((value) {
           prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
         },);

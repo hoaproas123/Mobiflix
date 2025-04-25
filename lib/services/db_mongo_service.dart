@@ -1,3 +1,4 @@
+import 'package:mobi_phim/models/infor_movie.dart';
 import 'package:mobi_phim/models/user_account_model.dart';
 import 'package:mobi_phim/models/user_model.dart';
 import 'package:mongo_dart/mongo_dart.dart';
@@ -18,7 +19,6 @@ class DbMongoService {
     for (var doc in documents) {
       print(doc);
     }
-
     await db.close();
   }
 
@@ -34,29 +34,30 @@ class DbMongoService {
     }
     await db.close();
   }
-  Future<bool> getUser(String _username,String _password) async {
+  Future<UserAccountModel?> getUser(String _username,String _password) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();
-
     var collection = db.collection('user');
     var user = await collection.findOne(where.eq('username', _username).eq('password', _password));
+    await db.close();
     if(user!=null)
     {
-        return true;
+        return UserAccountModel.fromJson(user);
     }
-    return false;
+    return null;
   }
-  Future<bool> isExistUser(String _username) async {
+  Future<UserAccountModel?> isExistUser(String _username) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();
 
     var collection = db.collection('user');
     var user = await collection.findOne(where.eq('username', _username));
+    await db.close();
     if(user!=null)
     {
-      return true;
+      return UserAccountModel.fromJson(user);
     }
-    return false;
+    return null;
   }
 
   Future<void> addUser(UserAccountModel newUser) async {
@@ -69,14 +70,110 @@ class DbMongoService {
     print("User added!");
     await db.close();
   }
-  Future<void> addMovie(Map<String, dynamic> newMovie) async {
+
+  Future<ObjectId> getIdProfile(String username) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();
 
-    var collection = db.collection('user');
-    await collection.insert(newMovie);
+    var collection = db.collection('profile');
+    var profile = await collection.findOne(where.eq('username', username));
+    await db.close();
+    return profile?['_id'] as ObjectId;
+  }
 
-    print("Movie added!");
+  Future<bool> isExistProfile(String profile_id) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('profile');
+    var profile = await collection.findOne(where.eq('_id', profile_id));
+    await db.close();
+    if(profile!=null)
+    {
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> addProfile(UserModel newProfile) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('profile');
+    await collection.insert(newProfile.toMap());
+
+    print("Profile added!");
+    await db.close();
+  }
+  Future<void> addContinueMovie(InforMovie newMovie) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('continue_movie');
+    // Kiểm tra xem slug đã tồn tại chưa
+    var existing = await collection.findOne(newMovie.findUserSlug_toMap());
+    if (existing != null) {
+      var _id;
+      try{
+        _id=ObjectId.fromHexString(newMovie.profile_id!);
+      }
+      catch(e){
+        _id=newMovie.profile_id;
+      }
+      await collection.updateOne(
+        where.eq('profile_id',_id).eq('slug_movie', newMovie.slug),
+        modify.set('episode', newMovie.episode).set('server_number', newMovie.serverNumber).set('update_at', DateTime.now()),
+      );
+      print("Continue Movie updated!");
+    } else {
+      await collection.insert(newMovie.toMap());
+      print("Continue Movie added!");
+    }
+    await db.close();
+  }
+  Future<bool> isFavoriteMovie(InforMovie newMovie) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('favorite_movie');
+    var existing = await collection.findOne(newMovie.findUserSlug_toMap());
+    await db.close();
+    if (existing == null) {
+      return false;
+    }
+    return true;
+  }
+  Future<void> addFavoriteMovie(InforMovie newMovie) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('favorite_movie');
+    // Kiểm tra xem slug đã tồn tại chưa
+    var existing = await collection.findOne(newMovie.findUserSlug_toMap());
+    if (existing == null) {
+      await collection.insert(newMovie.toMap());
+      print("Favorite Movie added!");
+    }
+    await db.close();
+  }
+  Future<void> removeFavoriteMovie(InforMovie newMovie) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('favorite_movie');
+    // Kiểm tra xem slug đã tồn tại chưa
+    var existing = await collection.findOne(newMovie.findUserSlug_toMap());
+    if (existing != null) {
+      var _id;
+      try{
+        _id=ObjectId.fromHexString(newMovie.profile_id!);
+      }
+      catch(e){
+        _id=newMovie.profile_id;
+      }
+      await collection.remove(where.eq('profile_id', _id).eq('slug_movie', newMovie.slug));
+      print("Favorite Movie removed!");
+    }
     await db.close();
   }
   Future<void> deleteMovie(String id) async {

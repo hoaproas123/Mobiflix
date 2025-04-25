@@ -1,3 +1,4 @@
+import 'package:mongo_dart/mongo_dart.dart';
 
 class UserAccountModel  {
   String? id;
@@ -13,9 +14,8 @@ class UserAccountModel  {
 
   factory UserAccountModel.fromJson(Map<String, dynamic> json) {
     return UserAccountModel(
-        id: json['id'],
-        username: json['username'],
-        password: json['password'],
+      username: json['username'] ,
+      password: json['password'] ,
     );
   }
   Map<String, dynamic> toMap() {

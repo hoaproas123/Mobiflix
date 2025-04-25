@@ -52,6 +52,7 @@ class LoginView extends GetView<LoginController> {
                                 height: 70,
                                 width: controller.loginSuccess.value==true? 300 : 325,
                                 child: TextFormField(
+                                  controller: controller.usernameController,
                                   decoration: InputDecoration(
                                     hintText: 'Username',
                                     fillColor: Colors.grey,
@@ -128,6 +129,7 @@ class LoginView extends GetView<LoginController> {
                           child: Row(
                             children: [
                               SizedBox(width: 10,),
+                              controller.isLoadingLogin.value==false ?
                               IconButton(
                                   onPressed: controller.onLoginButtonPress,
                                   splashColor: Colors.white,
@@ -136,6 +138,11 @@ class LoginView extends GetView<LoginController> {
                                       color: Colors.white,
                                       size: 30
                                   )
+                              )
+                                :
+                              Transform.scale(
+                                scale: 0.7,
+                                child: CircularProgressIndicator(strokeWidth: 4,color: Colors.white,),
                               ),
                             ],
                           ),

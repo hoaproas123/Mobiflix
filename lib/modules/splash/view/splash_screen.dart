@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
+import 'package:mobi_phim/models/user_model.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controllerMove;
   late Animation<double> _animationMove;
   final int letterCount = 8; // MOBIFLIX có 8 chữ cái
-
+  late UserModel user;
   @override
   void initState() {
     super.initState();
@@ -42,11 +44,15 @@ class _SplashScreenState extends State<SplashScreen>
     _animationMove = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(parent: _controllerMove, curve: Curves.easeIn),
     );
-    Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() {
-      Get.offAndToNamed(Routes.LOGIN);
+    Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() async {
+      await getTokenLogin();
+      Get.offAndToNamed(Routes.LOGIN,arguments: user);
     },);
   }
-
+  Future<void> getTokenLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    user=UserModel(username: prefs.getString('username')); // Mặc định là tập 1 nếu chưa lưu
+  }
   @override
   void dispose() {
     _controller.dispose();
