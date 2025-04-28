@@ -13,7 +13,7 @@ class Alert {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const CircularProgressIndicator(
-              color: Colors.green,
+              color: Colors.white,
             ),
             SizedBox(
               height: 10,

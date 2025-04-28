@@ -105,6 +105,45 @@ class DbMongoService {
     print("Profile added!");
     await db.close();
   }
+  Future<List<String>> getListContinueMovie(String userId) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+    var _id;
+    try{
+      _id=ObjectId.fromHexString(userId);
+    }
+    catch(e){
+      _id=userId;
+    }
+    var collection = db.collection('continue_movie');
+    var documents = await collection.find(where.eq('profile_id',_id).sortBy('update_at',descending: true).fields(['slug_movie'])
+    ).toList();
+    await db.close();
+    return documents.map((e) => e['slug_movie'].toString()).toList();
+  }
+  Future<List<String>?> getServerEpisodeContinueMovie(String userId,String slug) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+    var _id;
+    try{
+      _id=ObjectId.fromHexString(userId);
+    }
+    catch(e){
+      _id=userId;
+    }
+    var collection = db.collection('continue_movie');
+    var documents = await collection.findOne(where.eq('profile_id',_id).eq('slug_movie', slug).fields(['server_number','episode']));
+    await db.close();
+    print('huhu '+documents.toString());
+    if (documents != null) {
+      return [
+        documents['server_number'].toString(),
+        documents['episode'].toString(),
+      ];
+    } else {
+      return null;
+    }
+  }
   Future<void> addContinueMovie(InforMovie newMovie) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();
@@ -131,6 +170,25 @@ class DbMongoService {
     }
     await db.close();
   }
+
+  Future<void> removeContinueMovie(InforMovie newMovie) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+    var collection = db.collection('continue_movie');
+    var _id;
+    try{
+      _id=ObjectId.fromHexString(newMovie.profile_id!);
+    }
+    catch(e){
+      _id=newMovie.profile_id;
+    }
+    await collection.remove(
+      where.eq('profile_id',_id).eq('slug_movie', newMovie.slug),
+    );
+    print("Continue Movie removed!");
+    await db.close();
+  }
+
   Future<bool> isFavoriteMovie(InforMovie newMovie) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();

@@ -22,7 +22,6 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controllerMove;
   late Animation<double> _animationMove;
   final int letterCount = 8; // MOBIFLIX có 8 chữ cái
-  late UserModel user;
   @override
   void initState() {
     super.initState();
@@ -45,13 +44,8 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _controllerMove, curve: Curves.easeIn),
     );
     Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() async {
-      await getTokenLogin();
-      Get.offAndToNamed(Routes.LOGIN,arguments: user);
+      Get.offAndToNamed(Routes.LOGIN);
     },);
-  }
-  Future<void> getTokenLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    user=UserModel(username: prefs.getString('username')); // Mặc định là tập 1 nếu chưa lưu
   }
   @override
   void dispose() {

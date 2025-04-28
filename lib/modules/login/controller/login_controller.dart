@@ -26,6 +26,8 @@ class LoginController extends GetxController {
   bool isAccountExist=false;
   RxBool isLoadingAccount=false.obs;
   RxBool isLoadingLogin=false.obs;
+  RxBool isLoadingUser=false.obs;
+
   Timer? _debounce;
 
   TextEditingController usernameController=TextEditingController();
@@ -41,14 +43,22 @@ class LoginController extends GetxController {
   );
   bool canLogin=false;
 
-  UserModel user=Get.arguments;
+  late UserModel user;
   @override
   Future<void> onInit() async {
     super.onInit();
-    usernameController=TextEditingController(text: user.username);
-    username=user.username??"";
+    isLoadingUser.value=true;
+    Future.delayed(Duration(seconds: 1),() async {
+      await getTokenLogin();
+      usernameController=TextEditingController(text: user.username??"");
+      username=user.username??"";
+      isLoadingUser.value=false;
+    },);
   }
-
+  Future<void> getTokenLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    user=UserModel(username: prefs.getString('username'));
+  }
   Future<void> saveToken() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString('id', userData!.id!);

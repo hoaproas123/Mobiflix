@@ -27,7 +27,7 @@ class DetailMovieView extends GetView<DetailController> {
             color: Colors.white,
           ),
         ),
-        body: controller.movieFromSlug == null  ?
+        body: controller.isLoading.value == true  ?
         VideoLoading()
             :
         FadeIn(

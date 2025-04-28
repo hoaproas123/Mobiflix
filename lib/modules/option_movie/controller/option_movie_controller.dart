@@ -7,6 +7,7 @@ import 'package:get/get_rx/get_rx.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
+import 'package:mobi_phim/controller/movie_controller.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/core/base_response.dart';
 import 'package:mobi_phim/data/country_data.dart';
@@ -67,8 +68,12 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     movieFromSlug.value=null;
     listEpisodesMovieFromSlug.value=[];
     listNewUpdateMovie.value=[];
-    optionMovieData();
-    loadGenreMovie();
+    Future.wait([
+      optionMovieData(),
+      loadGenreMovie(),
+    ]);
+
+
   }
   ///***************************
   Future<void> optionMovieData() async {
@@ -133,28 +138,6 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
           buttonText:  CommonString.ERROR);
     }
   }
-  Future<List> getSavedEpisode(String slug) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
-  }
-  Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
-    final prefs = await SharedPreferences.getInstance();
-    InforMovie newMovie=InforMovie(profile_id: user?.id,slug: slug,episode: episodeNumber,serverNumber: serverNumber );
-    DbMongoService().addContinueMovie(newMovie);
-    if(prefs.containsKey(slug)){
-      if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
-        await prefs.remove(slug);
-      }
-      else{
-        await prefs.remove(slug).then((value) {
-          prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
-        },);
-      }
-    }
-    else{
-      await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
-    }
-  }
   ///***************************************
   Future<void> genreMovie(String genre,String title) async {
     listMovieModel=[];
@@ -184,11 +167,13 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
 
 
   }
-  void loadGenreMovie(){
-    for(int i=0;i<genresList.length;i++)
-    {
+  Future<void> loadGenreMovie()async {
+    List<Future> futures = [];
+
+    for (int i = 0; i < genresList.length; i++) {
       genreMovie(genresList[i].slug!,genresList[i].name!);
     }
+    await Future.wait(futures);
   }
   Future<void> _updateBackgroundColor(String imageUrl) async {
     final PaletteGenerator paletteGenerator =
@@ -211,10 +196,12 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     Get.toNamed(Routes.SEARCH_MOVIE,arguments: [backgroundColor.value,hsl.value,addQuery]);
   }
   onPlayButtonPress(String slug,List<EpisodesMovieModel> listEpisodes) async {
-    List inforSave=await getSavedEpisode(slug);
+    MovieController _controller=Get.put(MovieController());
+    Alert.showLoadingIndicator(message: '');
+    List inforSave=await _controller.getSavedEpisode(user.id!,slug);
     int server = int.parse(inforSave[0]);
     int episode = int.parse(inforSave[1]);
-    saveEpisode(server,episode+1,slug,listEpisodes);
+    _controller.saveEpisode(user.id!,server,episode+1,slug,listEpisodes);
     Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
   }
   List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {

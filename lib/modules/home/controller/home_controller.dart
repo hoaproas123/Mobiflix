@@ -8,6 +8,7 @@ import 'package:get/get_rx/get_rx.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
+import 'package:mobi_phim/controller/movie_controller.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/core/base_response.dart';
 import 'package:mobi_phim/data/country_data.dart';
@@ -28,7 +29,9 @@ import 'package:mobi_phim/modules/login/controller/login_controller.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/services/domain_service.dart';
+import 'package:mobi_phim/services/utils.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'package:mobi_phim/models/movies_model.dart';
@@ -155,9 +158,14 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     listContinueMovieModel.value =[];
     listContinueEpisodeModel.value=[];
     listEpisodesMovieFromSlug.value=[];
-    newUpdateMovieData(null);
-    loadGenreMovie();
-    getListContinueMovie();
+    Future.wait([
+      newUpdateMovieData(null),
+      loadGenreMovie(),
+      getListContinueMovie(),
+    ]);
+
+
+
   }
   ///***************************
   Future<void> newUpdateMovieData(HomeModel? data) async {
@@ -180,10 +188,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
         firstMovieItem.value=listNewUpdateMovie[0];
         getMovieFromSlug(firstMovieItem.value!.slug!);
         await _updateBackgroundColor(listNewUpdateMovie[0].poster_url??"");
-        // print(listNewUpdateMovie[2].poster_url);
-          // moviesModel=MoviesModel.fromJson(response!.data!);
-          // print(moviesModel!.list_movie?[1].name);
-          // homeModel = HomeModel.fromJson(response!.data!);
       }
       else {
         Alert.showError(
@@ -226,11 +230,13 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
           buttonText:  CommonString.CANCEL);
     }
   }
-  void loadGenreMovie(){
-    for(int i=0;i<genresList.length;i++)
-    {
-      genreMovie(genresList[i].slug!);
+  Future<void> loadGenreMovie()async {
+    List<Future> futures = [];
+    for (int i = 0; i < genresList.length; i++) {
+      futures.add(genreMovie(genresList[i].slug!));
     }
+    // Đợi tất cả Future hoàn thành
+    await Future.wait(futures);
   }
 
 
@@ -246,6 +252,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
           movieFromSlug.value= ItemMovieModel.fromJson(response?.movies);
+
         }
         if(response?.movies_episodes !=null){
           response?.movies_episodes.forEach((item){
@@ -300,35 +307,14 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
           buttonText:  CommonString.CANCEL);
     }
   }
-  Future<List> getSavedEpisode(String slug) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getStringList(slug) ?? [0.toString(),(-1).toString()]; // Mặc định là tập 1 nếu chưa lưu
-  }
-  Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
-    final prefs = await SharedPreferences.getInstance();
-    InforMovie newMovie=InforMovie(profile_id: user?.id,slug: slug,episode: episodeNumber,serverNumber: serverNumber );
-    DbMongoService().addContinueMovie(newMovie);
-    if(prefs.containsKey(slug)){
-      if(episodeNumber==listEpisodes[0].server_data!.length-1 ) {
-        await prefs.remove(slug);
-      }
-      else{
-        await prefs.remove(slug).then((value) {
-          prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
-        },);
-      }
-    }
-    else{
-      await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
-    }
-  }
+
   Future<void> getListContinueMovie() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> listSlugContinueMovie=prefs.getKeys().toList().reversed.toList();
-    for(int i=0;i<listSlugContinueMovie.length;i++){
-      getContinueMovieFromSlug(listSlugContinueMovie[i]);
+    List<String> listSlugContinueMovie= await DbMongoService().getListContinueMovie(user!.id!);
+    for (int i = 0; i < listSlugContinueMovie.length; i++) {
+      await getContinueMovieFromSlug(listSlugContinueMovie[i]);
     }
   }
+
   Future<void> getListFavoriteMovie() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> listSlugContinueMovie=prefs.getKeys().toList().reversed.toList();
@@ -394,10 +380,14 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
           buttonText:  CommonString.CANCEL);
     }
     else{
-      List inforSave=await getSavedEpisode(slug);
+      MovieController _controller=Get.put(MovieController());
+      Alert.showLoadingIndicator(message: '');
+      List inforSave=await _controller.getSavedEpisode(user!.id!,slug);
       int server = int.parse(inforSave[0]);
       int episode = int.parse(inforSave[1]);
-      saveEpisode(server,episode+1,slug,listEpisodes);
+      _controller.saveEpisode(user!.id!,server,episode+1,slug,listEpisodes);
+      Alert.closeLoadingIndicator();
+
       Get.toNamed(Routes.PLAY_MOVIE, arguments: [server,episode+1, slug,listEpisodes]);
     }
 

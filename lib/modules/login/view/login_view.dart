@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/modules/login/controller/login_controller.dart';
+import 'package:mobi_phim/widgets/animation_text_loading.dart';
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
@@ -51,7 +52,10 @@ class LoginView extends GetView<LoginController> {
                               SizedBox(
                                 height: 70,
                                 width: controller.loginSuccess.value==true? 300 : 325,
-                                child: TextFormField(
+                                child: controller.isLoadingUser.value==true ?
+                                LoadingTextAnimation()
+                                    :
+                                TextFormField(
                                   controller: controller.usernameController,
                                   decoration: InputDecoration(
                                     hintText: 'Username',

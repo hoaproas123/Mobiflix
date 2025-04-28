@@ -4,11 +4,10 @@ import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/controller/movie_controller.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
-import 'package:mobi_phim/models/infor_movie.dart';
 import 'package:mobi_phim/models/user_model.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
-import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/widgets/custom_Controls_Video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -74,37 +73,20 @@ class PlayMovieController extends GetxController {
         },
         canNext: canNext,
         onNextEpisode: (){
-          saveEpisode(currentServer,currentEpisode+1,slug,listEpisodes!);
+          MovieController _controller=Get.put(MovieController());
+          _controller.saveEpisode(user.id!,currentServer,currentEpisode+1,slug,listEpisodes!);
           Get.offNamed(Routes.PLAY_MOVIE,arguments: [currentServer,currentEpisode+1,slug,listEpisodes],preventDuplicates: false);
         },
         listNameOfEpisodes: listEpisodes![currentServer].server_data!.map((item) => item.name!,).toList(),
         currentEpisode: currentEpisode,
         onShowEpisodeList: (value){
-          saveEpisode(currentServer,value,slug,listEpisodes!);
+          MovieController _controller=Get.put(MovieController());
+          _controller.saveEpisode(user.id!,currentServer,value,slug,listEpisodes!);
           Get.offNamed(Routes.PLAY_MOVIE,arguments: [currentServer,value,slug,listEpisodes],preventDuplicates: false);
         },
         title: listEpisodes![currentServer].server_data![currentEpisode].name!,
       );
   }
-  Future<void> saveEpisode(int serverNumber,int episodeNumber,String slug, List<EpisodesMovieModel> listEpisodes) async {
-    final prefs = await SharedPreferences.getInstance();
-    InforMovie newMovie=InforMovie(profile_id: user?.id,slug: slug,episode: episodeNumber,serverNumber: serverNumber );
-    DbMongoService().addContinueMovie(newMovie);
-    if(prefs.containsKey(slug)){
-      if(episodeNumber==listEpisodes[currentServer].server_data!.length-1 ) {
-        await prefs.remove(slug);
-      }
-      else{
-        await prefs.remove(slug).then((value) {
-          prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
-        },);
-      }
-    }
-    else{
-      await prefs.setStringList(slug, [serverNumber.toString(),episodeNumber.toString()]);
-    }
-  }
-
 
   @override
   void onClose() {
