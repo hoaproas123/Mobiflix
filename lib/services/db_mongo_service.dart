@@ -71,12 +71,12 @@ class DbMongoService {
     await db.close();
   }
 
-  Future<ObjectId> getIdProfile(String username) async {
+  Future<ObjectId> getIdProfile(String _username) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();
 
     var collection = db.collection('profile');
-    var profile = await collection.findOne(where.eq('username', username));
+    var profile = await collection.findOne(where.eq('username', _username));
     await db.close();
     return profile?['_id'] as ObjectId;
   }
@@ -188,7 +188,22 @@ class DbMongoService {
     print("Continue Movie removed!");
     await db.close();
   }
-
+  Future<List<String>> getListFavoriteMovie(String userId) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+    var _id;
+    try{
+      _id=ObjectId.fromHexString(userId);
+    }
+    catch(e){
+      _id=userId;
+    }
+    var collection = db.collection('favorite_movie');
+    var documents = await collection.find(where.eq('profile_id',_id).fields(['slug_movie'])
+    ).toList();
+    await db.close();
+    return documents.map((e) => e['slug_movie'].toString()).toList();
+  }
   Future<bool> isFavoriteMovie(InforMovie newMovie) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();

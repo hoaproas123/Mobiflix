@@ -111,7 +111,14 @@ class LoginController extends GetxController {
     await checkInternetConnection();
     if(canLogin==true){
       isLoadingLogin.value=true;
-      ObjectId id = await DbMongoService().getIdProfile(username);
+      ObjectId id;
+      try{
+        id= await DbMongoService().getIdProfile(username);
+      }
+      catch(e){
+        await DbMongoService().addProfile(UserModel(username: username,name: username));
+        id= await DbMongoService().getIdProfile(username);
+      }
       userData = UserModel(id: id.toJson(),username: username,name: username);
       saveToken();
       Get.offAndToNamed(Routes.HOME,arguments: userData);
@@ -120,7 +127,7 @@ class LoginController extends GetxController {
           'Xin chào ${userData?.name}',
           colorText: Colors.white
       );
-      print(userData?.id);
+
     }
   }
   Future<void> onloginWithFacebook() async {

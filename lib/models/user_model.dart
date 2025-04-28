@@ -26,6 +26,7 @@ class UserModel  {
   Map<String, dynamic> toMap() {
     return {
       "_id": id,
+      "username": username,
       "name": name ,
       "urlImg": urlAvatar,
     };

@@ -64,7 +64,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                     children: [
                       WidgetSize.sizedBoxHeight_15,
                       OptionsBarWidget(controller: controller),
-                      HighlightMovieWidget(controller: controller,url: false,),
+                      GetBuilder<OptionMovieController>(builder: (_controller) => HighlightMovieWidget(controller: _controller,url: false,),),
                       WidgetSize.sizedBoxHeight_15,
                       controller.tag ==DefaultString.YEAR || controller.selectYear.value!=DefaultString.YEAR || controller.selectCountry.value.name!=DefaultString.COUNTRY ?
                       const SizedBox()
@@ -100,7 +100,7 @@ class OptionMovieView extends GetView<OptionMovieController> {
                           children: [
                             WidgetSize.sizedBoxHeight_5,
                             OptionsBarWidget(controller: controller),
-                            HighlightMovieWidget(controller: controller,url: false,),
+                            GetBuilder<OptionMovieController>(builder: (_controller) => HighlightMovieWidget(controller: _controller,url: false,),),
                           ],
                         ),
                         if((controller.tag ==DefaultString.COUNTRY && (controller.tag !=DefaultString.YEAR || controller.selectYear.value==DefaultString.YEAR || controller.selectCountry.value.name==DefaultString.COUNTRY))==true)

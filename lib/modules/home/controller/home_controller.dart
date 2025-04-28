@@ -29,9 +29,7 @@ import 'package:mobi_phim/modules/login/controller/login_controller.dart';
 import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/services/domain_service.dart';
-import 'package:mobi_phim/services/utils.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
-import 'package:mongo_dart/mongo_dart.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'package:mobi_phim/models/movies_model.dart';
@@ -53,6 +51,8 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   RxList<ItemMovieModel> listContinueMovieModel =<ItemMovieModel>[].obs;
   RxList<List<EpisodesMovieModel>> listContinueEpisodeModel =<List<EpisodesMovieModel>>[].obs;
+
+  RxList<ItemMovieModel> listFavoriteMovieModel =<ItemMovieModel>[].obs;
 
   RxList<String> listFavoriteSlug =<String>[].obs;
 
@@ -156,16 +156,15 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     listNewUpdateMovie.value=[];
     listMovieModel=[];
     listContinueMovieModel.value =[];
+    listFavoriteMovieModel.value =[];
     listContinueEpisodeModel.value=[];
     listEpisodesMovieFromSlug.value=[];
     Future.wait([
+      getListContinueMovie(),
+      getListFavoriteMovie(),
       newUpdateMovieData(null),
       loadGenreMovie(),
-      getListContinueMovie(),
     ]);
-
-
-
   }
   ///***************************
   Future<void> newUpdateMovieData(HomeModel? data) async {
@@ -177,7 +176,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
         url: DomainProvider.newUpdateMovieV2,
       ));
     }
-    update();
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.items !=null){
@@ -188,6 +186,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
         firstMovieItem.value=listNewUpdateMovie[0];
         getMovieFromSlug(firstMovieItem.value!.slug!);
         await _updateBackgroundColor(listNewUpdateMovie[0].poster_url??"");
+        update();
       }
       else {
         Alert.showError(
@@ -212,7 +211,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     response = await homeRepository.loadData(HomeModel(
         url: '${DomainProvider.moviesByGenre}the-loai/$genre',
     ));
-    update();
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
         listMovieModel.add( MoviesModel.fromJson(response!.data!,DefaultString.NULL));
@@ -247,7 +245,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     response = await homeRepository.loadData(HomeModel(
       url: DomainProvider.detailMovie + slug,
     ));
-    update();
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
@@ -284,14 +281,14 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
-          listContinueMovieModel.add(ItemMovieModel.fromJson(response?.movies));
+          listContinueMovieModel.value.add(ItemMovieModel.fromJson(response?.movies));
         }
         if(response?.movies_episodes !=null){
           List<EpisodesMovieModel> listEpisode=[];
           response?.movies_episodes.forEach((item){
             listEpisode.add(EpisodesMovieModel.fromJson(item));
           });
-          listContinueEpisodeModel.add(listEpisode);
+          listContinueEpisodeModel.value.add(listEpisode);
         }
       }
       else {
@@ -315,11 +312,37 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     }
   }
 
+  ///***************************
+  Future<void> getFavoriteMovieFromSlug(String slug) async {
+    final BaseResponse? response;
+    response = await homeRepository.loadData(HomeModel(
+      url: DomainProvider.detailMovie + slug,
+    ));
+    update();
+    if (response?.statusCode == HttpStatus.ok) {
+      if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
+        if(response?.movies !=null){
+          listFavoriteMovieModel.value.add(ItemMovieModel.fromJson(response?.movies));
+        }
+      }
+      else {
+        Alert.showError(
+            title: CommonString.ERROR,
+            message:CommonString.ERROR_DATA_MESSAGE,
+            buttonText:  CommonString.CANCEL);
+      }
+    } else {
+      Alert.showError(
+          title: CommonString.ERROR,
+          message: CommonString.ERROR_URL_MESSAGE,
+          buttonText:  CommonString.CANCEL);
+    }
+  }
   Future<void> getListFavoriteMovie() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> listSlugContinueMovie=prefs.getKeys().toList().reversed.toList();
-    for(int i=0;i<listSlugContinueMovie.length;i++){
-      getContinueMovieFromSlug(listSlugContinueMovie[i]);
+    List<String> listSlugFavoriteMovie= await DbMongoService().getListFavoriteMovie(user!.id!);
+    for (int i = 0; i < listSlugFavoriteMovie.length; i++) {
+      await getFavoriteMovieFromSlug(listSlugFavoriteMovie[i]);
+
     }
   }
   List<int> generateYearsList({int range = AppNumber.DEFAULT_TOTAL_YEAR_RENDER_IN_LIST_YEAR}) {
@@ -331,7 +354,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
 
   Future<void> _updateBackgroundColor(String imageUrl) async {
-    update();
     final PaletteGenerator paletteGenerator =
     await PaletteGenerator.fromImageProvider(NetworkImage(imageUrl));
     backgroundColor.value = paletteGenerator.dominantColor?.color ?? Colors.white;

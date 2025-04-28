@@ -41,7 +41,11 @@ class ListMovieWidget extends StatelessWidget {
         moviesModel= controller.listMovieModel.length != 0 ? controller.listMovieModel[0] :MoviesModel();
         listMovie= controller.listContinueMovieModel.value;
       }
+      if(listType==ListType.FAVORITE_MOVIE){
+        moviesModel= controller.listMovieModel.length != 0 ? controller.listMovieModel[0] :MoviesModel();
+        listMovie= controller.listFavoriteMovieModel.value;
       }
+    }
     else {
       moviesModel=  controller.listMovieModel[index!]!;
       listMovie=moviesModel?.list_movie ?? [];
@@ -178,6 +182,18 @@ class ListMovieWidget extends StatelessWidget {
                                 ),
                               ),
                             )
+                        )
+                            :
+                        const SizedBox(),
+                        listType==ListType.FAVORITE_MOVIE ?
+                        Positioned(
+                            top: -3,
+                            right: -2,
+                            child: Icon(
+                              Icons.favorite,
+                              size: 25,
+                              color: Colors.pinkAccent,
+                            ),
                         )
                             :
                         const SizedBox()

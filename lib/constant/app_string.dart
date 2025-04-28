@@ -51,6 +51,8 @@ abstract class MovieString {
   static const String NEW_EPISODE_TITLE = "Tập Mới";
   static const String NEW_ADD_TITLE = "Mới Thêm";
   static const String LIST_CONTINUE_MOVIE_WATCH_TITLE = "Danh sách Tiếp tục xem";
+  static const String LIST_FAVORITE_MOVIE_WATCH_TITLE = "Danh sách phim yêu thích";
+
 }
 abstract class TagString {
   static const String CLOSE = "close";

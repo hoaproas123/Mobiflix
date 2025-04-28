@@ -93,6 +93,7 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
         firstMovieItem.value=listNewUpdateMovie[0];
         getMovieFromSlug(firstMovieItem.value!.slug!);
         await _updateBackgroundColor(DomainProvider.imgUrl+firstMovieItem.value!.poster_url!);
+        update();
       }
       else {
         Alert.showError(
@@ -145,7 +146,6 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
     response = await optionMovieRepository.loadData(OptionMovieModel(
       url: '$url?category=$genre${selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${selectYear.value}'}${selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${selectCountry.value.slug}'}',
     ));
-    update();
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
         if((MoviesModel.fromJson(response!.data!,title).pagination?.totalPages ?? 0) > 0){

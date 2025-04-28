@@ -5,7 +5,6 @@ import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/modules/home/controller/home_controller.dart';
 import 'package:get/get.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
-import 'package:mobi_phim/widgets/loading_screen_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
 
 class UserPage extends GetView<HomeController> {
@@ -63,6 +62,7 @@ class UserPage extends GetView<HomeController> {
                     ),
                     WidgetSize.sizedBoxHeight_15,
                     ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
+                    ListMovieWidget(title: MovieString.LIST_FAVORITE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.FAVORITE_MOVIE,),
                   ],
                 )
                     :
@@ -122,6 +122,7 @@ class UserPage extends GetView<HomeController> {
                         ],
                       ),
                       ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
+                      ListMovieWidget(title: MovieString.LIST_FAVORITE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.FAVORITE_MOVIE,),
                     ],
                   ),
                 ),
