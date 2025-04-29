@@ -2,6 +2,9 @@
 
 A movie viewing app for movie buffs
 
+> [!IMPORTANT]
+> This application is not used to make money, only for learning, increasing project experience
+
 ## Video Demo
 [https://photos.app.goo.gl/2ifTeFp7j6CUKyyZ8](https://photos.app.goo.gl/1kDpkhVZVbDn15ww5)
 
