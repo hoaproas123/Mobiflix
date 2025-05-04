@@ -61,13 +61,10 @@ class DetailController extends GetxController with GetTickerProviderStateMixin{
     super.onInit();
     tabController = TabController(length: 2, vsync: this);
     isLoading.value=true;
-    await Future.wait([
-      getMovieFromSlug(slug),
-      getTokenLogin(),
-    ]).then((value) async {
-      _updateTextColor(movieFromSlug!.poster_url!);
-      isFavorite.value= await DbMongoService().isFavoriteMovie(InforMovie(profile_id: user.id,slug: slug));
-    },);
+    await getMovieFromSlug(slug);
+    await getTokenLogin();
+    _updateTextColor(movieFromSlug!.poster_url!);
+    isFavorite.value= await DbMongoService().isFavoriteMovie(InforMovie(profile_id: user.id,slug: slug));
     isLoading.value=false;
     if(movieFromSlug!.trailer_url != '') {
       playVideo(movieFromSlug!.trailer_url!);

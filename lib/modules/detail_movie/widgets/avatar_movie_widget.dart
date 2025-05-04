@@ -21,9 +21,11 @@ class BuildAvatarMovie extends StatelessWidget {
       height: context.orientation==Orientation.portrait ? context.height/3 : context.height,
       width: context.width,
       child: detailMovie?.trailer_url != DefaultString.NULL && controller.youtubePlayerController!=null?
-      YoutubePlayer(
-        controller: controller.youtubePlayerController!,
-        progressIndicatorColor: Colors.red,
+      RepaintBoundary(
+        child: YoutubePlayer(
+          controller: controller.youtubePlayerController!,
+          progressIndicatorColor: Colors.red,
+        ),
       )
           :
       Image.network(

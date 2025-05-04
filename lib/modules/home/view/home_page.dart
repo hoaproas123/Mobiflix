@@ -9,6 +9,7 @@ import 'package:mobi_phim/models/movies_model.dart';
 import 'package:mobi_phim/modules/home/widgets/optionsBar_widget.dart';
 import 'package:mobi_phim/widgets/highlight_movie_widget.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
+import 'package:mobi_phim/widgets/list_top_movie_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -39,9 +40,9 @@ class HomePage extends GetView<HomeController> {
                   controller: controller.scrollController,
                   scrollDirection: Axis.vertical,
                   children: [
+                    context.orientation==Orientation.portrait ?
                     GetBuilder<HomeController>(builder: (controller) {
-                      return context.orientation==Orientation.portrait ?
-                      Column(
+                      return Column(
                         children: [
                           WidgetSize.sizedBoxHeight_15,
                           OptionsBarWidget(controller: controller),
@@ -49,6 +50,7 @@ class HomePage extends GetView<HomeController> {
                           WidgetSize.sizedBoxHeight_15,
                           ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
                           ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE,controller: controller,listType: ListType.NEW_UPDATE_MOVIE,),
+                          ListTopMovieWidget(title: 'Top 8 phim hôm nay', controller: controller),
                           ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -60,49 +62,50 @@ class HomePage extends GetView<HomeController> {
                               return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.titlePage)??DefaultString.NULL,index: index,controller: controller,);
                             },),
                         ],
-                      )
-                          :
-                      SizedBox(
-                        height: context.height*0.8,
-                        child: PageView(
-                          scrollDirection: Axis.vertical,
-                          onPageChanged: (value) {
-                            if(value==3) {
-                              controller.accessScroll.value= !controller.accessScroll.value;
-                            }
-                          },
+                      );
+                    })
+                        :
+                    SizedBox(
+                    height: context.height*0.8,
+                    child: PageView(
+                      scrollDirection: Axis.vertical,
+                      onPageChanged: (value) {
+                        if(value==4) {
+                          controller.accessScroll.value= !controller.accessScroll.value;
+                        }
+                      },
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                WidgetSize.sizedBoxHeight_5,
-                                OptionsBarWidget(controller: controller),
-                                HighlightMovieWidget(controller: controller,),
-                              ],
-                            ),
-                            ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
-                            ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE,controller: controller,listType: ListType.NEW_UPDATE_MOVIE,),
-                            SizedBox(
-                              height: context.height*0.8,
-                              child: PageView.builder(
-                                onPageChanged: (value) {
-                                  if(value==0) {
-                                    controller.accessScroll.value= !controller.accessScroll.value;
-                                  }
-                                },
-                                physics: controller.accessScroll.value ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                itemCount: controller.listMovieModel.length,
-                                itemBuilder: (context, index) {
-                                  MoviesModel moviesModel=controller.listMovieModel[index];
-                                  int? len=moviesModel.pagination?.totalPages;
-                                  return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.titlePage)??DefaultString.NULL,index: index,controller: controller,);
-                                },),
-                            ),
+                            WidgetSize.sizedBoxHeight_5,
+                            OptionsBarWidget(controller: controller),
+                            HighlightMovieWidget(controller: controller,),
                           ],
                         ),
-                      );
-                    },)
+                        ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
+                        ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE,controller: controller,listType: ListType.NEW_UPDATE_MOVIE,),
+                        ListTopMovieWidget(title: 'Top 8 phim hôm nay', controller: controller),
+                        SizedBox(
+                          height: context.height*0.8,
+                          child: PageView.builder(
+                            onPageChanged: (value) {
+                              if(value==0) {
+                                controller.accessScroll.value= !controller.accessScroll.value;
+                              }
+                            },
+                            physics: controller.accessScroll.value ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            itemCount: controller.listMovieModel.length,
+                            itemBuilder: (context, index) {
+                              MoviesModel moviesModel=controller.listMovieModel[index];
+                              int? len=moviesModel.pagination?.totalPages;
+                              return len == 0 ? const SizedBox() : ListMovieWidget(title: (moviesModel.titlePage)??DefaultString.NULL,index: index,controller: controller,);
+                            },),
+                        ),
+                      ],
+                    ),
+                  ),
 
                   ]
               ),

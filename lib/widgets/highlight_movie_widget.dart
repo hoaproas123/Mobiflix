@@ -204,7 +204,7 @@ class HighlightMovieWidget extends StatelessWidget {
                         Get.toNamed(Routes.DETAIL_MOVIE, arguments: firstMovieItem.slug ?? DefaultString.NULL);
                       },
                       child: Container(
-                        alignment: Alignment.center,
+                        alignment: Alignment.centerLeft,
                         padding: const EdgeInsets.only(left: 6),
                         width: context.width/2,
                         child: Text(
@@ -261,7 +261,7 @@ class HighlightMovieWidget extends StatelessWidget {
                                 WidgetSize.sizedBoxWidth_10,
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                  constraints: BoxConstraints(maxWidth: context.width*0.3),
+                                  constraints: BoxConstraints(maxWidth: context.width*0.25),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                       color: Colors.grey.withOpacity(0.1),
