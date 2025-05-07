@@ -14,28 +14,36 @@ class HomeAppbarWidget extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      return AppBar(
-        leading: context.orientation==Orientation.portrait ?
-        null
-            :
-        IconButton(
-          icon: Icon(Icons.menu,color: Colors.white,),
-          onPressed: () {
-            controller.scaffoldKey.currentState!.openDrawer();
-          },),
-        automaticallyImplyLeading: false,
-        backgroundColor: title==AppString.APP_NAME ? controller.backgroundColor.value : Colors.black,
-        elevation: 0,
-        title: GestureDetector(
-          onTap: title==AppString.APP_NAME ? controller.scrollToTop : null,
-          child: Text(
-            title,
-            style: const TextStyle(
-                color: Colors.white
+      return PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOut,
+          color: title == AppString.APP_NAME
+              ? controller.backgroundColor.value
+              : Colors.black,
+          child: AppBar(
+            leading: context.orientation == Orientation.portrait
+                ? null
+                : IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () {
+                controller.scaffoldKey.currentState!.openDrawer();
+              },
             ),
+            automaticallyImplyLeading: false,
+            backgroundColor: Colors.transparent, //
+            elevation: 0,
+            title: GestureDetector(
+              onTap: title == AppString.APP_NAME ? controller.scrollToTop : null,
+              child: Text(
+                title,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+            actions: actions,
           ),
         ),
-        actions: actions,
       );
     },);
   }

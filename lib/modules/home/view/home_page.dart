@@ -1,4 +1,5 @@
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
@@ -19,13 +20,14 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Obx(() {
       return Center(
-        child: Container(
+        child: AnimatedContainer(
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: controller.backgroundColor.value==AppColors.DEFAULT_APPBAR_COLOR ?
-                AppColors.DEFAULT_BACKGROUND_COLORS
-                    :
-                AppColors.LINEAR_BACKGROUND_COLORS(controller.hsl.value),
+                colors: controller.backgroundColor.value == AppColors.DEFAULT_APPBAR_COLOR
+                    ? AppColors.DEFAULT_BACKGROUND_COLORS
+                    : AppColors.LINEAR_BACKGROUND_COLORS(controller.hsl.value),
                 begin: Alignment.topCenter,
                 end: Alignment.center,
               ),
@@ -46,8 +48,7 @@ class HomePage extends GetView<HomeController> {
                         children: [
                           WidgetSize.sizedBoxHeight_15,
                           OptionsBarWidget(controller: controller),
-                          HighlightMovieWidget(controller: controller,),
-                          WidgetSize.sizedBoxHeight_15,
+                          ListHighlightMovieWidget(controller: controller),
                           ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),
                           ListMovieWidget(title: MovieString.NEW_UPDATE_TITLE,controller: controller,listType: ListType.NEW_UPDATE_MOVIE,),
                           ListTopMovieWidget(title: 'Top 8 phim hôm nay', controller: controller),
@@ -80,7 +81,7 @@ class HomePage extends GetView<HomeController> {
                           children: [
                             WidgetSize.sizedBoxHeight_5,
                             OptionsBarWidget(controller: controller),
-                            HighlightMovieWidget(controller: controller,),
+                            ListHighlightMovieWidget(controller: controller),
                           ],
                         ),
                         ListMovieWidget(title: MovieString.LIST_CONTINUE_MOVIE_WATCH_TITLE,controller: controller,listType: ListType.CONTINUE_MOVIE_WATCH,),

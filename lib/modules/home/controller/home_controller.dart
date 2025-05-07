@@ -1,10 +1,8 @@
 
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
@@ -16,7 +14,6 @@ import 'package:mobi_phim/data/genre_data.dart';
 import 'package:mobi_phim/data/option_view_data.dart';
 import 'package:mobi_phim/models/country_item.dart';
 import 'package:mobi_phim/models/episodes_movie.dart';
-import 'package:mobi_phim/models/infor_movie.dart';
 import 'package:mobi_phim/models/item_movie.dart';
 import 'package:mobi_phim/models/option_view_model.dart';
 import 'package:mobi_phim/models/user_model.dart';
@@ -33,7 +30,6 @@ import 'package:mobi_phim/widgets/widgets.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'package:mobi_phim/models/movies_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends GetxController  with GetTickerProviderStateMixin{
   final HomeRepository homeRepository;
@@ -42,8 +38,13 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   UserModel? user=Get.arguments;
   List<MoviesModel> listMovieModel =[];
+
   RxList<ItemMovieModel> listNewUpdateMovie = <ItemMovieModel>[].obs;
-  Rx<ItemMovieModel?> firstMovieItem = Rx<ItemMovieModel?>(null);
+  List<ItemMovieModel>? listMovieFromSlug;
+  List<List<EpisodesMovieModel>>? listEpisodesMovieFromSlug;
+  List<Color> listBackgroundColor=[];
+  List<HSLColor> listHSLBackgroundColor=[];
+
   List<ItemMovieModel> listGenreMovie=[];
   List<CountryItemModel> listCountry=countryList;
   List<int> listYear=[];
@@ -61,9 +62,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   var backgroundColor = AppColors.DEFAULT_APPBAR_COLOR.obs;
   var hsl = HSLColor.fromColor(Colors.white).obs;
-
-  Rx<ItemMovieModel?> movieFromSlug = Rx<ItemMovieModel?>(null);
-  RxList<EpisodesMovieModel> listEpisodesMovieFromSlug = <EpisodesMovieModel>[].obs;
 
 
   RxBool isLoading=true.obs;
@@ -85,6 +83,38 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   @override
   Future<void> onInit() async {
     super.onInit();
+    initBottomNavigator();
+    accessScroll=false.obs;
+    // Khởi tạo animation mờ dần của Splash
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_FADE_IN_MILLISECONDS), // Hiệu ứng mờ dần
+    );
+    fadeAnimation = Tween<double>(begin: 1, end: 0).animate(animationController);
+    listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
+    onLoading();
+    Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() {
+      isLoading.value=false;
+    },);
+  }
+  onLoading()  {
+    listMovieFromSlug=[];
+    listNewUpdateMovie.value=[];
+    listMovieModel=[];
+    listBackgroundColor=[];
+    listHSLBackgroundColor=[];
+    listContinueMovieModel.value =[];
+    listFavoriteMovieModel.value =[];
+    listContinueEpisodeModel.value=[];
+    listEpisodesMovieFromSlug=[];
+    Future.wait([
+      getListContinueMovie(),
+      getListFavoriteMovie(),
+      newUpdateMovieData(null),
+      loadGenreMovie(),
+    ]);
+  }
+  initBottomNavigator(){
     listPages = [];
     listPages
       ..add(const HomePage())
@@ -95,11 +125,11 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
       ..add(HomeAppbarWidget(
         actions: [
           IconButton(
-          onPressed: () => onSearchPress(),
-          icon: const Icon(
-            Icons.search,
-            size: 30,
-            color: Colors.white,
+            onPressed: () => onSearchPress(),
+            icon: const Icon(
+              Icons.search,
+              size: 30,
+              color: Colors.white,
             ),
           ),
           WidgetSize.sizedBoxWidth_10,
@@ -136,35 +166,6 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
         WidgetSize.sizedBoxWidth_10,
       ],
     );
-    accessScroll=false.obs;
-    // Khởi tạo animation mờ dần của Splash
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_FADE_IN_MILLISECONDS), // Hiệu ứng mờ dần
-    );
-
-    fadeAnimation = Tween<double>(begin: 1, end: 0).animate(animationController);
-    listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
-    onLoading();
-    Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() {
-      isLoading.value=false;
-    },);
-  }
-  onLoading()  {
-    firstMovieItem.value=null;
-    movieFromSlug.value=null;
-    listNewUpdateMovie.value=[];
-    listMovieModel=[];
-    listContinueMovieModel.value =[];
-    listFavoriteMovieModel.value =[];
-    listContinueEpisodeModel.value=[];
-    listEpisodesMovieFromSlug.value=[];
-    Future.wait([
-      getListContinueMovie(),
-      getListFavoriteMovie(),
-      newUpdateMovieData(null),
-      loadGenreMovie(),
-    ]);
   }
   ///***************************
   Future<void> newUpdateMovieData(HomeModel? data) async {
@@ -178,14 +179,12 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     }
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
-        if(response?.items !=null){
-          response?.items.forEach((item){
-            listNewUpdateMovie.add(ItemMovieModel.fromJson(item));
-          });
+        for (var item in response?.items ?? []) {
+          final movie = ItemMovieModel.fromJson(item);
+          listNewUpdateMovie.add(movie);
+          getMovieFromSlug(movie.slug!);
+          await _updateBackgroundColor(movie.poster_url ?? "");
         }
-        firstMovieItem.value=listNewUpdateMovie[0];
-        getMovieFromSlug(firstMovieItem.value!.slug!);
-        await _updateBackgroundColor(listNewUpdateMovie[0].poster_url??"");
         update();
       }
       else {
@@ -240,7 +239,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   ///***************************
   Future<void> getMovieFromSlug(String slug) async {
-    listEpisodesMovieFromSlug.value=[];
+    List<EpisodesMovieModel> listEpisodes=[];
     final BaseResponse? response;
     response = await homeRepository.loadData(HomeModel(
       url: DomainProvider.detailMovie + slug,
@@ -248,13 +247,14 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
-          movieFromSlug.value= ItemMovieModel.fromJson(response?.movies);
+          listMovieFromSlug?.add(ItemMovieModel.fromJson(response?.movies));
 
         }
         if(response?.movies_episodes !=null){
           response?.movies_episodes.forEach((item){
-            listEpisodesMovieFromSlug.add(EpisodesMovieModel.fromJson(item));
+            listEpisodes.add(EpisodesMovieModel.fromJson(item));
           });
+          listEpisodesMovieFromSlug?.add(listEpisodes);
         }
       }
       else {
@@ -281,14 +281,14 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
-          listContinueMovieModel.value.add(ItemMovieModel.fromJson(response?.movies));
+          listContinueMovieModel.add(ItemMovieModel.fromJson(response?.movies));
         }
         if(response?.movies_episodes !=null){
           List<EpisodesMovieModel> listEpisode=[];
           response?.movies_episodes.forEach((item){
             listEpisode.add(EpisodesMovieModel.fromJson(item));
           });
-          listContinueEpisodeModel.value.add(listEpisode);
+          listContinueEpisodeModel.add(listEpisode);
         }
       }
       else {
@@ -322,7 +322,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     if (response?.statusCode == HttpStatus.ok) {
       if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.movies !=null){
-          listFavoriteMovieModel.value.add(ItemMovieModel.fromJson(response?.movies));
+          listFavoriteMovieModel.add(ItemMovieModel.fromJson(response?.movies));
         }
       }
       else {
@@ -356,8 +356,18 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   Future<void> _updateBackgroundColor(String imageUrl) async {
     final PaletteGenerator paletteGenerator =
     await PaletteGenerator.fromImageProvider(NetworkImage(imageUrl));
-    backgroundColor.value = paletteGenerator.dominantColor?.color ?? Colors.white;
-    hsl.value = HSLColor.fromColor(backgroundColor.value);
+    if(listBackgroundColor.length==0) {
+      listBackgroundColor.add(paletteGenerator.dominantColor?.color ?? Colors.white);
+      listHSLBackgroundColor.add(HSLColor.fromColor(paletteGenerator.dominantColor?.color ?? Colors.white));
+      backgroundColor.value=listBackgroundColor[0];
+      hsl.value=listHSLBackgroundColor[0];
+    }
+    else{
+      listBackgroundColor.add(paletteGenerator.dominantColor?.color ?? Colors.white);
+      listHSLBackgroundColor.add(HSLColor.fromColor(paletteGenerator.dominantColor?.color ?? Colors.white));
+    }
+    // backgroundColor.value = paletteGenerator.dominantColor?.color ?? Colors.white;
+    // hsl.value = HSLColor.fromColor(backgroundColor.value);
   }
 
   void onSelectYear(int result,String tag){

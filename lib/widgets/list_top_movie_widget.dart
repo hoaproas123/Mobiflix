@@ -51,7 +51,10 @@ class ListTopMovieWidget extends StatelessWidget {
               cacheExtent: 60,
               itemCount: 8,
               itemBuilder: (context, index) {
-                return Padding(
+                return listMovie!.length<=index ?
+                SizedBox()
+                  :
+                Padding(
                   padding: const EdgeInsets.only(right: 5.0),
                   child: Stack(
                     children: [

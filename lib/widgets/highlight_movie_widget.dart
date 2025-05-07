@@ -1,6 +1,8 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
@@ -11,19 +13,58 @@ import 'package:mobi_phim/routes/app_pages.dart';
 import 'package:mobi_phim/services/domain_service.dart';
 import 'package:mobi_phim/widgets/loading_screen_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
-class HighlightMovieWidget extends StatelessWidget {
-  const HighlightMovieWidget({
+
+class ListHighlightMovieWidget extends StatelessWidget {
+  const ListHighlightMovieWidget({
     required this.controller,
-    this.url=true,
 
     super.key,
   });
   final controller;
-  final bool url;
   @override
   Widget build(BuildContext context) {
-    ItemMovieModel? firstMovieItem = controller.firstMovieItem?.value;
-    ItemMovieModel? movieFromSlug = controller.movieFromSlug?.value;
+    return CarouselSlider(
+      items: List.generate(10,(index) {
+        return HighlightMovieWidget(controller: controller,index: index,);
+      },),
+      options: CarouselOptions(
+        height: context.orientation==Orientation.portrait ? 480.0 :  272.0,
+        autoPlay: true,
+        autoPlayInterval: Duration(minutes: 1),
+        viewportFraction: 1,
+        disableCenter: true,
+        onPageChanged: (index, reason) {
+          Future.delayed(Duration(milliseconds: 800),() {
+            controller.backgroundColor.value=controller.listBackgroundColor[index];
+            controller.hsl.value=controller.listHSLBackgroundColor[index];
+          },);
+        },
+
+      ),
+    );
+  }
+}
+
+class HighlightMovieWidget extends StatelessWidget {
+  const HighlightMovieWidget({
+    required this.controller,
+    this.url=true,
+    this.index=0,
+    super.key,
+  });
+  final controller;
+  final bool url;
+  final int index;
+  @override
+  Widget build(BuildContext context) {
+    ItemMovieModel? firstMovieItem = controller.listNewUpdateMovie?.length<=index ? null : controller.listNewUpdateMovie?[index];
+    ItemMovieModel? movieFromSlug;
+    try{
+      movieFromSlug = controller.listMovieFromSlug?.length<=index ? null :controller.listMovieFromSlug?[index];
+    }
+    catch(e){
+      movieFromSlug = controller.movieFromSlug.value;
+    }
     return context.orientation==Orientation.portrait ?
     firstMovieItem==null || movieFromSlug==null?
     Padding(
@@ -44,6 +85,7 @@ class HighlightMovieWidget extends StatelessWidget {
     )
         :
     Padding(
+      key: ValueKey(firstMovieItem.slug),
       padding: const EdgeInsets.only(top: 30.0),
       child: Column(
         children: [
@@ -87,7 +129,7 @@ class HighlightMovieWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         MaterialButton(
-                          onPressed: () => controller.onPlayButtonPress(firstMovieItem.slug,controller.listEpisodesMovieFromSlug.value),
+                          onPressed: () => controller.onPlayButtonPress(firstMovieItem.slug,controller.listEpisodesMovieFromSlug?[index]),
                           color: Colors.white,
                           child: const Row(
                             children: [
@@ -155,6 +197,7 @@ class HighlightMovieWidget extends StatelessWidget {
     )
         :
     Padding(
+      key: ValueKey(firstMovieItem.slug),
       padding: const EdgeInsets.only(top: 5.0,left: 8,right: 8),
       child: SizedBox(
         width: context.width,
@@ -352,7 +395,7 @@ class HighlightMovieWidget extends StatelessWidget {
                                 color: Colors.grey.withOpacity(0.2)
                               ),
                               child: Text(
-                                  movieFromSlug.list_category?[index].name??DefaultString.NULL,
+                                  movieFromSlug?.list_category?[index].name??DefaultString.NULL,
                                 style: TextStyle(
                                   color: Colors.white,      // Đổi màu chữ thành trắng
                                   fontSize: context.width*0.02,
@@ -368,7 +411,7 @@ class HighlightMovieWidget extends StatelessWidget {
                       child: SizedBox(
                         width: context.width/2,
                         child: MaterialButton(
-                          onPressed: () => controller.onPlayButtonPress(firstMovieItem.slug,controller.listEpisodesMovieFromSlug),
+                          onPressed: () => controller.onPlayButtonPress(firstMovieItem.slug,controller.listEpisodesMovieFromSlug?[index]),
                           color: Colors.white,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
