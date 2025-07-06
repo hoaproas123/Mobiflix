@@ -114,7 +114,6 @@ class ListMovieWidget extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: SizedBox(
-                    width: context.orientation==Orientation.portrait ? context.width*0.4 : context.height*0.38,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -123,11 +122,12 @@ class ListMovieWidget extends StatelessWidget {
                           child: Card(
                             elevation: 10,
                             clipBehavior: Clip.antiAliasWithSaveLayer,
-                            color: Colors.transparent,
+                            color: Colors.transparent.withOpacity(0.1),
                             child: CachedNetworkImage(
                               imageUrl: (this.index == null)
                                   ? url==true ? listMovie![index].poster_url! : DomainProvider.imgUrl + listMovie![index].poster_url!
                                   : DomainProvider.imgUrl + listMovie![index].poster_url!,
+                              width: context.orientation==Orientation.portrait ? context.height*0.35*(800/1200) : context.width*0.3*(800/1200),
                               cacheManager: MyCacheManager.instance,
                               placeholder: (context, url) => CardItemLoading(),
                               errorWidget: (context, url, error) {
@@ -135,7 +135,7 @@ class ListMovieWidget extends StatelessWidget {
                               },
                               imageBuilder: (context, imageProvider) => Ink.image(
                                 image: imageProvider,
-                                fit: BoxFit.fill,
+                                fit: BoxFit.fitWidth,
                                 child: InkWell(
                                   overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2)),
                                   onTap: () {

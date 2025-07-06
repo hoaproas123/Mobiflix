@@ -87,6 +87,7 @@ class HighlightMovieWidget extends StatelessWidget {
       key: ValueKey(firstMovieItem.slug),
       padding: const EdgeInsets.only(top: 30.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -94,7 +95,7 @@ class HighlightMovieWidget extends StatelessWidget {
               FadeIn(
                 duration: const Duration(seconds: 1),
                 child: SizedBox(
-                  width: 300,
+                  width: 280,
                   child: Card(
                     elevation: 50,
                     clipBehavior: Clip.antiAlias,

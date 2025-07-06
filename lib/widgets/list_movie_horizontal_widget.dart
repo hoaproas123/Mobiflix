@@ -69,7 +69,7 @@ class ListMovieHorizontalWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
-                          height: context.orientation==Orientation.portrait ? context.height*1/7 : context.width*1/3 ,
+                          height: context.orientation==Orientation.portrait ? context.height*1/5 : context.width*1/3 ,
                           width: context.orientation==Orientation.portrait ? context.width*3/13 : context.height*6/13 ,
                           child: Stack(
                             alignment: Alignment.center,
