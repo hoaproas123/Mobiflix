@@ -6,13 +6,16 @@ class UserModel  {
   String? username;
   String? name;
   String? urlAvatar;
+  bool canEdit;
 
 
   UserModel({
       this.id,
       this.username,
       this.name,
-      this.urlAvatar,});
+      this.urlAvatar,
+      this.canEdit=false,
+  });
 
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +24,7 @@ class UserModel  {
         username: json['username'],
         name: json['name'],
         urlAvatar: json['picture']['data']['url'],
+        canEdit: false,
     );
   }
   Map<String, dynamic> toMap() {

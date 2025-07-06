@@ -83,7 +83,7 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
           url: '$url?limit=20&sort_field=modified.time${selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${selectYear.value}'}${selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${selectCountry.value.slug}'}' )
     );
     if (response?.statusCode == HttpStatus.ok) {
-      if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
+      if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if(response?.data !=null){
           movieByOption.value=MoviesModel.fromJson(response!.data!,DefaultString.NULL);
           for (var item in movieByOption.value.list_movie!) {
@@ -147,7 +147,7 @@ class OptionMovieController extends GetxController with GetTickerProviderStateMi
       url: '$url?category=$genre${selectYear.value==DefaultString.YEAR? DefaultString.NULL : '&year=${selectYear.value}'}${selectCountry.value.slug==DefaultString.COUNTRY? DefaultString.NULL : '&country=${selectCountry.value.slug}'}',
     ));
     if (response?.statusCode == HttpStatus.ok) {
-      if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
+      if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         if((MoviesModel.fromJson(response!.data!,title).pagination?.totalPages ?? 0) > 0){
           listMovieModel.add( MoviesModel.fromJson(response!.data!,title));
         }

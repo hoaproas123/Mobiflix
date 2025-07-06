@@ -1,7 +1,6 @@
 
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -30,11 +29,11 @@ class ListHighlightMovieWidget extends StatelessWidget {
       options: CarouselOptions(
         height: context.orientation==Orientation.portrait ? 480.0 :  272.0,
         autoPlay: true,
-        autoPlayInterval: Duration(minutes: 1),
+        autoPlayInterval: const Duration(minutes: 1),
         viewportFraction: 1,
         disableCenter: true,
         onPageChanged: (index, reason) {
-          Future.delayed(Duration(milliseconds: 800),() {
+          Future.delayed(const Duration(milliseconds: 800),() {
             controller.backgroundColor.value=controller.listBackgroundColor[index];
             controller.hsl.value=controller.listHSLBackgroundColor[index];
           },);
@@ -92,11 +91,10 @@ class HighlightMovieWidget extends StatelessWidget {
           Stack(
             alignment: Alignment.center,
             children: [
-              SizedBox(
-                width: 280,
-                height: 400,
-                child: FadeIn(
-                  duration: const Duration(seconds: 1),
+              FadeIn(
+                duration: const Duration(seconds: 1),
+                child: SizedBox(
+                  width: 300,
                   child: Card(
                     elevation: 50,
                     clipBehavior: Clip.antiAlias,
@@ -104,12 +102,12 @@ class HighlightMovieWidget extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: url == true ? firstMovieItem.poster_url ?? DefaultString.NULL : DomainProvider.imgUrl + firstMovieItem.poster_url!,
                       cacheManager: MyCacheManager.instance,
-                      fit: BoxFit.fill,
+                      height: 400,
                       placeholder: (context, url) =>CardHighLightLoading(),
                       errorWidget: (context, url, error) => Image.asset('assets/icon/no_image.png',fit: BoxFit.fill,color: Colors.white,),
                       imageBuilder: (context, imageProvider) => Ink.image(
                         image: imageProvider,
-                        fit: BoxFit.fill,
+                        fit: BoxFit.fitWidth,
                         child: InkWell(
                           overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.1)),
                           onTap: () {
@@ -173,7 +171,7 @@ class HighlightMovieWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
               width: context.width*0.25,
               height: context.height*0.68,
               child: Card(
@@ -417,7 +415,7 @@ class HighlightMovieWidget extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.play_arrow,color: Colors.black,size: context.width*0.05,),
-                              SizedBox(width: 5,),
+                              const SizedBox(width: 5,),
                               Text(AppString.PLAY_BUTTON,style: TextStyle(fontSize: context.width*0.03,color: Colors.black),)
                             ],
                           ),

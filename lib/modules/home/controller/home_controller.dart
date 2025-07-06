@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
+import 'package:mobi_phim/controller/auth_controller.dart';
 import 'package:mobi_phim/controller/movie_controller.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/core/base_response.dart';
@@ -80,6 +81,9 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
   late Widget currentAppbar;
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  RxBool isEditName=false.obs;
+  TextEditingController usernameController=TextEditingController();
+  final url_FieldKey = GlobalKey<FormFieldState>();
   @override
   Future<void> onInit() async {
     super.onInit();
@@ -92,6 +96,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
     );
     fadeAnimation = Tween<double>(begin: 1, end: 0).animate(animationController);
     listYear=generateYearsList(range: AppNumber.TOTAL_YEAR_RENDER_IN_LIST_YEAR);
+    usernameController=TextEditingController(text: user?.name?? 'Người dùng không xác định');
     onLoading();
     Future.delayed(const Duration(seconds: AppNumber.NUMBER_OF_DURATION_WAIT_SPLASH_SCREEN_SECONDS),() {
       isLoading.value=false;
@@ -211,7 +216,7 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
         url: '${DomainProvider.moviesByGenre}the-loai/$genre',
     ));
     if (response?.statusCode == HttpStatus.ok) {
-      if(response?.status == AppReponseString.STATUS_SUCCESS) {//success with 'data' and true with 'items' and 'movies'
+      if(response?.status == AppReponseString.STATUS_TRUE) {//success with 'data' and true with 'items' and 'movies'
         listMovieModel.add( MoviesModel.fromJson(response!.data!,DefaultString.NULL));
       }
       else {
@@ -425,17 +430,93 @@ class HomeController extends GetxController  with GetTickerProviderStateMixin{
 
   }
   void scrollToTop() {
-    scrollController.animateTo(
-      0.0,
-      duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_SCROLL_MILLISECONDS),
-      curve: Curves.easeInOut,
-    );
+    // scrollController.animateTo(
+    //   0.0,
+    //   duration: const Duration(milliseconds: AppNumber.NUMBER_OF_DURATION_SCROLL_MILLISECONDS),
+    //   curve: Curves.easeInOut,
+    // );
+    AuthController authController = Get.find();
+    print(authController.user?.username);
   }
 
   void changePage(int selectedIndex) {
       currentIndex.value = selectedIndex;
       currentPage = listPages[selectedIndex];
       currentAppbar=listAppbars[selectedIndex];
+  }
+  void showSelectImageDialog(BuildContext context) {
+    if(user?.canEdit==true){
+      showDialog(
+        barrierDismissible: true,
+        barrierColor: Colors.black.withOpacity(0.5),
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Nhập đường dẫn Hình Ảnh'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    key: url_FieldKey,
+                    decoration: InputDecoration(
+                      hintText: 'Nhập đường dẫn',
+                      counterText: "",
+                      isDense: true,
+                      // errorStyle: TextStyle(color: Colors.white),
+                      hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
+                      contentPadding: const EdgeInsets.all(20),
+                    ) ,
+                    style: const TextStyle(color: Colors.black, fontSize: 16),
+                    validator: (value)  {
+                      if (value == null || value.isEmpty) {
+                        return 'Vui lòng nhập đường dẫn';
+                      }
+
+                      final uri = Uri.tryParse(value);
+                      final isValidUrl = uri != null && (uri.isScheme("http") || uri.isScheme("https"));
+                      final isImageFile = value.endsWith(".jpg") || value.endsWith(".jpeg") || value.endsWith(".png") || value.endsWith(".gif") || value.endsWith(".webp");
+
+                      if (!isValidUrl) {
+                        return 'Đường dẫn không hợp lệ (phải bắt đầu bằng http hoặc https)';
+                      }
+
+                      if (!isImageFile) {
+                        return 'Đường dẫn không phải là file ảnh hợp lệ';
+                      }
+                      user=UserModel(canEdit: true,id: user?.id,name: user?.name,username: user?.username,urlAvatar: value);
+                      return null; // hợp lệ
+                    },
+
+                  ),
+
+                ],
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  if (url_FieldKey.currentState!.validate()) {
+                    DbMongoService().updateAvatarProfile(user!.username!, url_FieldKey.currentState!.value);
+                    Get.back();
+                  }
+                },
+                child: Container(
+                    width: context.width*0.25,
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'Lưu',
+                      style: TextStyle(color: Colors.black),
+                    )
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
   @override
   void dispose() {

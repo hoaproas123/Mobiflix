@@ -2,12 +2,11 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mobi_phim/controller/auth_controller.dart';
 import 'package:mobi_phim/core/alert.dart';
 import 'package:mobi_phim/models/user_account_model.dart';
 import 'package:mobi_phim/models/user_model.dart';
@@ -48,7 +47,7 @@ class LoginController extends GetxController {
   Future<void> onInit() async {
     super.onInit();
     isLoadingUser.value=true;
-    Future.delayed(Duration(seconds: 1),() async {
+    Future.delayed(const Duration(seconds: 1),() async {
       await getTokenLogin();
       usernameController=TextEditingController(text: user.username??"");
       username=user.username??"";
@@ -112,14 +111,24 @@ class LoginController extends GetxController {
     if(canLogin==true){
       isLoadingLogin.value=true;
       ObjectId id;
+      String name;
+      String? url;
+      List getToken;
       try{
-        id= await DbMongoService().getIdProfile(username);
+        getToken= await DbMongoService().getIdProfile(username);
       }
       catch(e){
         await DbMongoService().addProfile(UserModel(username: username,name: username));
-        id= await DbMongoService().getIdProfile(username);
+        getToken= await DbMongoService().getIdProfile(username);
       }
-      userData = UserModel(id: id.toJson(),username: username,name: username);
+      id=getToken[0];
+      name=getToken[1];
+      url=getToken[2];
+      userData = UserModel(id: id.toJson(),username: username,name: name,urlAvatar: url,canEdit: true);
+      Get.put(AuthController());
+      final authController= Get.find<AuthController>();
+      authController.user=userData;
+      print(authController.user?.username);
       saveToken();
       Get.offAndToNamed(Routes.HOME,arguments: userData);
       Get.snackbar(
@@ -144,7 +153,7 @@ class LoginController extends GetxController {
             'Xin chào ${userData?.name}',
             colorText: Colors.white
         );
-        Future.delayed(Duration(seconds: 3),() async {
+        Future.delayed(const Duration(seconds: 3),() async {
           bool isExistProfile=await DbMongoService().isExistProfile(userData!.id!);
           if(isExistProfile==false){
             DbMongoService().addProfile(userData!);
@@ -179,7 +188,7 @@ class LoginController extends GetxController {
             'Xin chào ${userData?.name}',
           colorText: Colors.white
         );
-        Future.delayed(Duration(seconds: 3),() async {
+        Future.delayed(const Duration(seconds: 3),() async {
           bool isExistProfile=await DbMongoService().isExistProfile(userData!.id!);
           if(isExistProfile==false){
             DbMongoService().addProfile(userData!);
@@ -199,7 +208,7 @@ class LoginController extends GetxController {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
+        return const AlertDialog(
           title: Text('Đăng nhập bằng vân tay'),
           titleTextStyle: TextStyle(fontSize: 18,color: Colors.white),
           backgroundColor: Colors.grey,
@@ -234,7 +243,7 @@ class LoginController extends GetxController {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Đăng ký'),
+          title: const Text('Đăng ký'),
           content: SizedBox(
             width: context.width*0.8,
             child: SingleChildScrollView(
@@ -253,12 +262,12 @@ class LoginController extends GetxController {
                           isDense: true,
                           // errorStyle: TextStyle(color: Colors.white),
                           hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
-                          contentPadding: EdgeInsets.all(20),
+                          contentPadding: const EdgeInsets.all(20),
                           suffixIcon: isLoadingAccount.value==true ? Transform.scale(
                             scale: 0.5,
-                            child: CircularProgressIndicator(strokeWidth: 4,),) : null
+                            child: const CircularProgressIndicator(strokeWidth: 4,),) : null
                       ) ,
-                      style: TextStyle(color: Colors.black, fontSize: 16),
+                      style: const TextStyle(color: Colors.black, fontSize: 16),
                       validator: (value)  {
                         if (value != null && isAccountExist==true) {
                           return 'Tên đăng nhập đã  tồn tại';
@@ -300,12 +309,12 @@ class LoginController extends GetxController {
                             isDense: true,
                             // errorStyle: TextStyle(color: Colors.white),
                             hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
-                            contentPadding: EdgeInsets.all(20),
+                            contentPadding: const EdgeInsets.all(20),
                             suffixIcon: GestureDetector(
                                 onTap: () => isPasswordHidden.value= !isPasswordHidden.value,
                                 child: isPasswordHidden.value==true ? const Icon(Icons.visibility_off,size: 25,) : const Icon(Icons.visibility,size: 25,)),
                           ),
-                          style: TextStyle(color: Colors.black, fontSize: 16),
+                          style: const TextStyle(color: Colors.black, fontSize: 16),
                           obscureText: isPasswordHidden.value,
                           validator: (value)  {
                             if(value==null||value==''){
@@ -331,18 +340,18 @@ class LoginController extends GetxController {
                             isDense: true,
                             // errorStyle: TextStyle(color: Colors.white),
                             hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
-                            contentPadding: EdgeInsets.all(20),
+                            contentPadding: const EdgeInsets.all(20),
                             suffixIcon: GestureDetector(
                                 onTap: () => isPasswordHidden.value= !isPasswordHidden.value,
                                 child: isPasswordHidden.value==true ? const Icon(Icons.visibility_off,size: 25,) : const Icon(Icons.visibility,size: 25,)),
                           ),
-                          style: TextStyle(color: Colors.black, fontSize: 16),
+                          style: const TextStyle(color: Colors.black, fontSize: 16),
                           obscureText: isPasswordHidden.value,
                           validator: (value)  {
                             if(value==null||value==''){
                               return 'Nhập lại mật khẩu';
                             }
-                            else if(value!= null && value!=password_FieldKey.currentState!.value){
+                            else if(value!=password_FieldKey.currentState!.value){
                               return 'Mật khẩu không trùng khớp';
                             }
                             return null;
@@ -367,7 +376,7 @@ class LoginController extends GetxController {
                 Navigator.pop(context);
                 FocusScope.of(context).unfocus();
               },
-              child: Text('Hủy'),
+              child: const Text('Hủy'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -389,7 +398,7 @@ class LoginController extends GetxController {
                 }
 
               },
-              child: Text('Đăng ký'),
+              child: const Text('Đăng ký'),
             ),
           ],
         );

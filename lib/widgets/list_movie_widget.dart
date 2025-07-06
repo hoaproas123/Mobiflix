@@ -104,7 +104,7 @@ class ListMovieWidget extends StatelessWidget {
           ),
         ),
         Container(
-            height: context.orientation==Orientation.portrait ? context.height*0.3 : context.width*0.3,
+            height: context.orientation==Orientation.portrait ? context.height*0.35 : context.width*0.3,
             padding: EdgeInsets.all(8),
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -114,7 +114,7 @@ class ListMovieWidget extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(right: 10.0),
                   child: SizedBox(
-                    width: context.orientation==Orientation.portrait ? context.width*0.4 : context.height*0.45,
+                    width: context.orientation==Orientation.portrait ? context.width*0.4 : context.height*0.38,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -123,13 +123,12 @@ class ListMovieWidget extends StatelessWidget {
                           child: Card(
                             elevation: 10,
                             clipBehavior: Clip.antiAliasWithSaveLayer,
-                            color: Colors.transparent.withOpacity(0.1),
+                            color: Colors.transparent,
                             child: CachedNetworkImage(
                               imageUrl: (this.index == null)
                                   ? url==true ? listMovie![index].poster_url! : DomainProvider.imgUrl + listMovie![index].poster_url!
                                   : DomainProvider.imgUrl + listMovie![index].poster_url!,
                               cacheManager: MyCacheManager.instance,
-                              fit: BoxFit.fill,
                               placeholder: (context, url) => CardItemLoading(),
                               errorWidget: (context, url, error) {
                                 return Image.asset('assets/icon/no_image.png',fit: BoxFit.fill,color: Colors.white,);

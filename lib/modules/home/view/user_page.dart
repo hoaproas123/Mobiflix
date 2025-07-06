@@ -4,6 +4,7 @@ import 'package:mobi_phim/constant/app_interger.dart';
 import 'package:mobi_phim/constant/app_string.dart';
 import 'package:mobi_phim/modules/home/controller/home_controller.dart';
 import 'package:get/get.dart';
+import 'package:mobi_phim/services/db_mongo_service.dart';
 import 'package:mobi_phim/widgets/list_movie_widget.dart';
 import 'package:mobi_phim/widgets/widgets.dart';
 
@@ -23,41 +24,76 @@ class UserPage extends GetView<HomeController> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     WidgetSize.sizedBoxHeight_15,
-                    Container(
-                      clipBehavior: Clip.antiAlias,
-                      height: 125,
-                      width: 125,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20)
-                      ),
-                      child: Image.network(
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset('assets/icon/unknown_user.png',fit: BoxFit.fill,color: Colors.white,);
-                        },
-                        controller.user?.urlAvatar??'',
-                        fit: BoxFit.fill,
+                    GestureDetector(
+                      onTap: () => controller.showSelectImageDialog(context),
+                      child: Container(
+                        clipBehavior: Clip.antiAlias,
+                        height: 125,
+                        width: 125,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20)
+                        ),
+                        child: Image.network(
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset('assets/icon/unknown_user.png',fit: BoxFit.fill,color: Colors.white,);
+                          },
+                          controller.user?.urlAvatar??'',
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
                     Stack(
+                      alignment: Alignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8),
-                          child: Text(
-                            controller.user?.name?? 'Người dùng không xác định',
-                            style: TextStyle(
-                              fontSize: 25,
-                              color: Colors.white
+                        Obx(() {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 12),
+                            child: SizedBox(
+                              width: (controller.usernameController.text.length+1)*14.0,
+                              child: TextFormField(
+                                controller: controller.usernameController,
+                                enabled: controller.isEditName.value,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white,width: 2)),
+                                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.white,width: 2)),
+                                ) ,
+                                onTapOutside: (event) {
+                                  if(controller.isEditName.value==true){
+                                    controller.isEditName.value= false;
+                                    DbMongoService().updateNameProfile(controller.user!.username!, controller.usernameController.text);
+                                  }
+                                },
+                                style: const TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.white
+                                ),
+                                onChanged: (value) {
+
+                                },
+                                onEditingComplete: () {
+                                  if(controller.isEditName.value==true){
+                                    controller.isEditName.value= false;
+                                    DbMongoService().updateNameProfile(controller.user!.username!, controller.usernameController.text);
+                                  }
+                                },
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },),
+                        controller.user!.canEdit ?
                         Positioned(
                           bottom: -10,
-                          right: -10,
+                          right: -20,
                           child: IconButton(
-                              onPressed: (){},
+                              onPressed: (){
+                                controller.isEditName.value= !controller.isEditName.value;
+                              },
                               icon: Icon(Icons.edit,color: Colors.white,size: 15,)
                           ),
-                        ),
+                        )
+                          :
+                        SizedBox(),
                       ],
                     ),
                     WidgetSize.sizedBoxHeight_15,

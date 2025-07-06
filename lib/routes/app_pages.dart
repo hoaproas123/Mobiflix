@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:mobi_phim/bindings/init_binding.dart';
 import 'package:mobi_phim/modules/detail_movie/bindings/detail_binding.dart';
 import 'package:mobi_phim/modules/detail_movie/view/detail_movie_view.dart';
 import 'package:mobi_phim/modules/genre_movie/bindings/genre_movie_binding.dart';

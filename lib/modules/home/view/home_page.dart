@@ -1,5 +1,4 @@
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:mobi_phim/constant/app_colors.dart';
 import 'package:mobi_phim/constant/app_interger.dart';
@@ -45,6 +44,7 @@ class HomePage extends GetView<HomeController> {
                     context.orientation==Orientation.portrait ?
                     GetBuilder<HomeController>(builder: (controller) {
                       return Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           WidgetSize.sizedBoxHeight_15,
                           OptionsBarWidget(controller: controller),

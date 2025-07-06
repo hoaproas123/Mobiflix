@@ -71,14 +71,14 @@ class DbMongoService {
     await db.close();
   }
 
-  Future<ObjectId> getIdProfile(String _username) async {
+  Future<List> getIdProfile(String _username) async {
     var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
     await db.open();
 
     var collection = db.collection('profile');
     var profile = await collection.findOne(where.eq('username', _username));
     await db.close();
-    return profile?['_id'] as ObjectId;
+    return [profile?['_id'] as ObjectId,profile?['name'],profile?['urlImg']];
   }
 
   Future<bool> isExistProfile(String profile_id) async {
@@ -103,6 +103,40 @@ class DbMongoService {
     await collection.insert(newProfile.toMap());
 
     print("Profile added!");
+    await db.close();
+  }
+
+  Future<void> updateNameProfile(String _username, String newName) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('profile');
+    // Kiểm tra xem slug đã tồn tại chưa
+    var existing = await collection.findOne(where.eq('username', _username));
+    if (existing != null) {
+      await collection.updateOne(
+        where.eq('username', _username),
+        modify.set('name', newName),
+      );
+      print("Name Profile updated!");
+    }
+    await db.close();
+  }
+
+  Future<void> updateAvatarProfile(String _username, String newImg) async {
+    var db = await Db.create("mongodb+srv://$username:$password$cluster_url/$db_name?retryWrites=true&w=majority");
+    await db.open();
+
+    var collection = db.collection('profile');
+    // Kiểm tra xem slug đã tồn tại chưa
+    var existing = await collection.findOne(where.eq('username', _username));
+    if (existing != null) {
+      await collection.updateOne(
+        where.eq('username', _username),
+        modify.set('urlImg', newImg),
+      );
+      print("Name Profile updated!");
+    }
     await db.close();
   }
   Future<List<String>> getListContinueMovie(String userId) async {

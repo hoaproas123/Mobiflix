@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,7 +28,7 @@ class LoginView extends GetView<LoginController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Đăng Nhập',
                   style: TextStyle(
                     fontSize: 35,
@@ -38,7 +36,7 @@ class LoginView extends GetView<LoginController> {
                     fontWeight: FontWeight.bold
                   ),
                 ),
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                 SizedBox(
                   width: context.width,
                   child: Obx(() {
@@ -65,23 +63,23 @@ class LoginView extends GetView<LoginController> {
                                     isDense: true,
                                     // errorStyle: TextStyle(color: Colors.white),
                                     hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
-                                    contentPadding: EdgeInsets.all(20),
+                                    contentPadding: const EdgeInsets.all(20),
                                     enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color:Colors.black,
                                         ),
                                         borderRadius: BorderRadius.circular(14)),
                                     focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.green),
+                                        borderSide: const BorderSide(color: Colors.green),
                                         borderRadius: BorderRadius.circular(14)),
                                     errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red),
+                                        borderSide: const BorderSide(color: Colors.red),
                                         borderRadius: BorderRadius.circular(14)),
                                     focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red),
+                                        borderSide: const BorderSide(color: Colors.red),
                                         borderRadius: BorderRadius.circular(14)),
                                   ),
-                                  style: TextStyle(color: Colors.black, fontSize: 16),
+                                  style: const TextStyle(color: Colors.black, fontSize: 16),
                                   onChanged: (value) => controller.onTextFormUsernameChange(value),
                                   textInputAction: TextInputAction.next,
                                 ),
@@ -101,23 +99,23 @@ class LoginView extends GetView<LoginController> {
                                     isDense: true,
                                     // errorStyle: TextStyle(color: Colors.white),
                                     hintStyle: TextStyle(color: Colors.black.withOpacity(0.5)),
-                                    contentPadding: EdgeInsets.all(20),
+                                    contentPadding: const EdgeInsets.all(20),
                                     enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
+                                        borderSide: const BorderSide(
                                           color:Colors.black,
                                         ),
                                         borderRadius: BorderRadius.circular(14)),
                                     focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.green),
+                                        borderSide: const BorderSide(color: Colors.green),
                                         borderRadius: BorderRadius.circular(14)),
                                     errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red),
+                                        borderSide: const BorderSide(color: Colors.red),
                                         borderRadius: BorderRadius.circular(14)),
                                     focusedErrorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red),
+                                        borderSide: const BorderSide(color: Colors.red),
                                         borderRadius: BorderRadius.circular(14)),
                                   ),
-                                  style: TextStyle(color: Colors.black, fontSize: 16),
+                                  style: const TextStyle(color: Colors.black, fontSize: 16),
                                   obscureText: controller.isPasswordHidden.value,
                                   onChanged: (value) => controller.onTextFormPasswordChange(value),
                                 ),
@@ -126,18 +124,18 @@ class LoginView extends GetView<LoginController> {
                           ),
                         ),
                         controller.loginSuccess.value==false ?
-                        SizedBox()
+                        const SizedBox()
                             :
                         FadeInRight(
                           duration: const Duration(milliseconds: 500),
                           child: Row(
                             children: [
-                              SizedBox(width: 10,),
+                              const SizedBox(width: 10,),
                               controller.isLoadingLogin.value==false ?
                               IconButton(
                                   onPressed: controller.onLoginButtonPress,
                                   splashColor: Colors.white,
-                                  icon: Icon(
+                                  icon: const Icon(
                                       Icons.arrow_forward_ios_rounded,
                                       color: Colors.white,
                                       size: 30
@@ -146,7 +144,7 @@ class LoginView extends GetView<LoginController> {
                                 :
                               Transform.scale(
                                 scale: 0.7,
-                                child: CircularProgressIndicator(strokeWidth: 4,color: Colors.white,),
+                                child: const CircularProgressIndicator(strokeWidth: 4,color: Colors.white,),
                               ),
                             ],
                           ),
@@ -158,7 +156,7 @@ class LoginView extends GetView<LoginController> {
                 ),
 
 
-                SizedBox(height: 15,),
+                const SizedBox(height: 15,),
                 SizedBox(
                   width: context.width,
                   child: Row(
@@ -172,7 +170,7 @@ class LoginView extends GetView<LoginController> {
                           icon: Image.asset('assets/icon/google.png')
                         ),
                       ),
-                      SizedBox(width: 15,),
+                      const SizedBox(width: 15,),
                       SizedBox(
                         width: 50,
                         height: 50,
@@ -181,7 +179,7 @@ class LoginView extends GetView<LoginController> {
                             icon: Image.asset('assets/icon/facebook.png')
                         ),
                       ),
-                      SizedBox(width: 15,),
+                      const SizedBox(width: 15,),
                       SizedBox(
                         width: 50,
                         height: 50,
@@ -193,13 +191,13 @@ class LoginView extends GetView<LoginController> {
                     ],
                   ),
                 ),
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
                 SizedBox(
                   width: context.width,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Chưa có tài khoản? ',
                         style: TextStyle(
                           color: Colors.white,
@@ -208,7 +206,7 @@ class LoginView extends GetView<LoginController> {
                       ),
                       GestureDetector(
                         onTap: () => controller.showRegisterDialog(context),
-                        child: Text(
+                        child: const Text(
                           'Đăng ký ngay',
                           style: TextStyle(
                             color: Colors.white,

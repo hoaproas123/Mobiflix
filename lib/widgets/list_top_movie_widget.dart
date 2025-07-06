@@ -69,13 +69,13 @@ class ListTopMovieWidget extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(left: 40,right: 10.0),
                         child: SizedBox(
-                          width: context.orientation==Orientation.portrait ? context.width*0.3 : context.height*0.4,
+                          width: context.orientation==Orientation.portrait ? context.width*0.28 : context.height*0.38,
                           child: FadeIn(
                             duration: const Duration(seconds: 1),
                             child: Card(
                               elevation: 10,
                               clipBehavior: Clip.antiAliasWithSaveLayer,
-                              color: Colors.transparent.withOpacity(0.1),
+                              color: Colors.blue,
                               child: CachedNetworkImage(
                                 imageUrl:  listMovie![index].poster_url!,
                                 cacheManager: MyCacheManager.instance,
